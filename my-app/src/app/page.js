@@ -1,13 +1,7 @@
-"use client";
-import Link from "next/link";
-import styles from "./page.module.css";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function Home() {
-  const router = useRouter();
-
-  const navigate = (param = "/") => {
-    router.push(param);
-  };
-  return <main className={styles.main}></main>;
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-between p-24"></main>
+  );
 }

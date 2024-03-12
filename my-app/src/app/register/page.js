@@ -4,7 +4,9 @@ import { useRouter } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import servicePath from "@/config";
-import { MessageAlert } from "../../CommonComponents";
+import { MessageAlert } from "../CommonComponents";
+import axios from "axios";
+import bcryptjs from "bcryptjs";
 
 const RegisterSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Required"),
@@ -23,16 +25,25 @@ const Register = () => {
 
   const handleSubmit = async (values) => {
     const { confirmPassword, ...rest } = values;
-    const response = await fetch(servicePath + "/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(rest),
-    });
-    const data = await response.json();
-    setMessage({
-      msg: data.message,
-      type: data.status === 200 ? "success" : "error",
-    });
+    try {
+      const salt = await bcryptjs.genSalt(10);
+      const hashedPassword = await bcryptjs.hash(rest.password, salt);
+      const response = await axios.post(servicePath + "/register", {
+        ...rest,
+        password: hashedPassword,
+      });
+      const data = response.data;
+      setMessage({
+        msg: data.message,
+        type: data.status === 200 ? "success" : "error",
+      });
+    } catch (e) {
+      const data = e?.response?.data;
+      setMessage({
+        msg: data.message,
+        type: data.status === 200 ? "success" : "error",
+      });
+    }
   };
 
   return (
@@ -57,15 +68,13 @@ const Register = () => {
             email: "",
             password: "",
             confirmPassword: "",
-            role: "user",
-            active: true,
           }}
           validationSchema={RegisterSchema}
           onSubmit={(values) => {
             handleSubmit(values);
           }}
         >
-          {({ errors, touched }) => (
+          {({ errors, touched, values }) => (
             <Form className="mt-8 space-y-6">
               <div className="rounded-md shadow-sm space-y-4">
                 <div>

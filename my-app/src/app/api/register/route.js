@@ -21,7 +21,11 @@ export async function POST(request) {
         { status: 409 }
       );
     } else {
-      let user = UserModel(payload);
+      let user = await UserModel.create({
+        ...payload,
+        active: true,
+        role: "user",
+      });
       const results = await user.save();
       return NextResponse.json(
         { message: "User added successfully.", status: 200 },

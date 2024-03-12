@@ -26,8 +26,9 @@ const Register = () => {
   const handleSubmit = async (values) => {
     const { confirmPassword, ...rest } = values;
     try {
-      const salt = await bcryptjs.genSalt(10);
-      const hashedPassword = await bcryptjs.hash(rest.password, salt);
+      const saltRounds = 10;
+      const staticSalt = bcryptjs.genSaltSync(saltRounds);
+      const hashedPassword = await bcryptjs.hash(rest.password, staticSalt);
       const response = await axios.post(servicePath + "/register", {
         ...rest,
         password: hashedPassword,
@@ -46,6 +47,9 @@ const Register = () => {
     }
   };
 
+  const navigateToLoginPage = () => {
+    router.push("/login");
+  };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -57,6 +61,7 @@ const Register = () => {
             Already have an account?{" "}
             <a
               href="#"
+              onClick={() => navigateToLoginPage()}
               className="font-medium text-indigo-600 hover:text-indigo-500"
             >
               Sign in

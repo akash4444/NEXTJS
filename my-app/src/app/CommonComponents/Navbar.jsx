@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import AlertModal from "./AlertModal";
 import { resetAuth } from "../redux/auth/authSlice";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -13,9 +14,8 @@ const Navbar = () => {
 
   const [logoutModal, setLogoutModal] = useState(false);
 
-  const logoutProcess = () => {
-    window.sessionStorage.removeItem("token");
-    window.sessionStorage.removeItem("userId");
+  const logoutProcess = async () => {
+    await signOut({ redirect: false });
     dispatch(resetAuth());
     setLogoutModal(false);
     router.push("/login");

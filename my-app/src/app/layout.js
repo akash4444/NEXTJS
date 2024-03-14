@@ -4,6 +4,8 @@ import Navbar from "./CommonComponents/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 import { Providers } from "./redux/Providers";
 import AuthGuard from "./CommonComponents/Auth/AuthGaurd";
+import { getServerSession } from "next-auth";
+import SessionProvider from "../app/api/SessionProvider";
 
 export const metadata = {
   title: "Create Next App",
@@ -11,15 +13,20 @@ export const metadata = {
 };
 
 export default function RootLayout({ children, ...rest }) {
+  const getServerSes = async () => {
+    return await getServerSession();
+  };
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Providers>
-          <AuthGuard>
-            <Navbar />
-            {children}
-          </AuthGuard>
-        </Providers>
+        <SessionProvider session={getServerSes()}>
+          <Providers>
+            <AuthGuard>
+              <Navbar />
+              {children}
+            </AuthGuard>
+          </Providers>
+        </SessionProvider>
       </body>
     </html>
   );

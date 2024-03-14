@@ -3,12 +3,10 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
-import bcryptjs from "bcryptjs";
-import axios from "axios";
-import servicePath from "@/config";
 import { MessageAlert } from "../CommonComponents";
 import { updateAuth } from "../redux/auth/authSlice";
 import { useSelector, useDispatch } from "react-redux";
+import { signIn } from "next-auth/react";
 
 const Login = () => {
   const router = useRouter();
@@ -23,36 +21,31 @@ const Login = () => {
     const { email, password } = values;
 
     try {
-      const response = await axios.post(servicePath + "/login", {
+      const response = await signIn("credentials", {
         email,
         password,
+        redirect: false,
       });
-      const data = response.data;
+
+      const data = response;
 
       if (data.status === 200) {
-        window.sessionStorage.setItem("token", data.accessToken);
-        window.sessionStorage.setItem("userId", email);
-        dispatch(
+        await dispatch(
           updateAuth({
             userId: email,
             isLoggedIn: true,
-            accessToken: data.accessToken,
-            refreshToken: data.refreshToken,
           })
         );
-        router.push("/dashboard");
+        router.push("/products");
       }
       setMessage({
-        msg: data.message,
+        msg:
+          data.status === 200
+            ? "Logged in successfully."
+            : "Invalid credentials.",
         type: data.status === 200 ? "" : "error",
       });
-    } catch (e) {
-      const data = e?.response?.data;
-      setMessage({
-        msg: data.message,
-        type: data.status === 200 ? "success" : "error",
-      });
-    }
+    } catch (e) {}
   };
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">

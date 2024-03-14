@@ -1,4 +1,3 @@
-// pages/login.js
 import React from "react";
 
 const Dashboard = () => {

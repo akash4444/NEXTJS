@@ -7,9 +7,12 @@ import bcryptjs from "bcryptjs";
 import axios from "axios";
 import servicePath from "@/config";
 import { MessageAlert } from "../CommonComponents";
+import { updateAuth } from "../redux/auth/authSlice";
+import { useSelector, useDispatch } from "react-redux";
 
 const Login = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [message, setMessage] = React.useState({});
 
   const navigateToRegisterPage = () => {
@@ -27,6 +30,16 @@ const Login = () => {
       const data = response.data;
 
       if (data.status === 200) {
+        window.sessionStorage.setItem("token", data.accessToken);
+        window.sessionStorage.setItem("userId", email);
+        dispatch(
+          updateAuth({
+            userId: email,
+            isLoggedIn: true,
+            accessToken: data.accessToken,
+            refreshToken: data.refreshToken,
+          })
+        );
         router.push("/dashboard");
       }
       setMessage({
@@ -57,58 +70,56 @@ const Login = () => {
             await handleLoginIn(values, setSubmitting);
           }}
         >
-          <Form>
-            <div className="mb-4">
-              <label htmlFor="email" className="block text-gray-700">
-                Email Address
-              </label>
-              <Field
-                type="email"
-                id="email"
-                name="email"
-                className="form-input mt-1 block w-full rounded-md border-gray-300"
-                placeholder="Enter your email"
-              />
-              <ErrorMessage
-                name="email"
-                component="div"
-                className="text-red-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="password" className="block text-gray-700">
-                Password
-              </label>
-              <Field
-                type="password"
-                id="password"
-                name="password"
-                className="form-input mt-1 block w-full rounded-md border-gray-300"
-                placeholder="Enter your password"
-              />
-              <ErrorMessage
-                name="password"
-                component="div"
-                className="text-red-500"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
-            >
-              Log in
-            </button>
-          </Form>
-        </Formik>
-        <div>
-          {message.msg && (
-            <MessageAlert
-              type={message.type}
-              message={message.msg}
-              onClose={() => setMessage({})}
-            />
+          {({ errors, touched, values }) => (
+            <Form className="mt-8 space-y-6">
+              <div className="rounded-md shadow-sm space-y-4">
+                <div>
+                  <Field
+                    type="email"
+                    name="email"
+                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    placeholder="Email address"
+                  />
+                  <ErrorMessage
+                    name="email"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <Field
+                    type="password"
+                    name="password"
+                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    placeholder="Password"
+                  />
+                  <ErrorMessage
+                    name="password"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Login
+                </button>
+              </div>
+              <div>
+                {message.msg && (
+                  <MessageAlert
+                    type={message.type}
+                    message={message.msg}
+                    onClose={() => setMessage({})}
+                  />
+                )}
+              </div>
+            </Form>
           )}
-        </div>
+        </Formik>
         <p className="mt-2 text-center text-sm text-gray-600">
           Don't have an account yet?
           <a

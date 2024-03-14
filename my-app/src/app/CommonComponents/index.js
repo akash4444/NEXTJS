@@ -1,3 +1,4 @@
 import MessageAlert from "./MessageAlert";
+import AlertModal from "./AlertModal";
 
-export { MessageAlert };
+export { MessageAlert, AlertModal };

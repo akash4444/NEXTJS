@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 const loggedOutPages = ["/login", "/register", "/home"];
 
-const loggedInPages = ["/home", "/products"];
+const loggedInPages = ["/home", "/products", "/addproducts"];
 
 export async function middleware(request) {
   // const session = await getSession(request);

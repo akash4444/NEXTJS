@@ -54,7 +54,7 @@ const Navbar = () => {
               <li>
                 <Link
                   className="text-white hover:text-gray-300"
-                  href="/products/add"
+                  href="/addproducts"
                 >
                   Add Product
                 </Link>

@@ -19,7 +19,6 @@ export default function AuthGuard({ children }) {
     }
   }, [session.status]);
 
-  console.log(router);
   useEffect(() => {
     const fetchData = async () => {
       const session = await getSession();

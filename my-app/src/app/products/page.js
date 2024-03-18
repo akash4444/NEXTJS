@@ -1,33 +1,33 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
-
-const products = [
-  {
-    id: 1,
-    name: "Product 1",
-    description: "Description of product 1.",
-    price: 10.99,
-    image:
-      "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.clearskin.in%2Fblog%2Fsummer-fruits-for-glowing-healthy-skin%2F&psig=AOvVaw3xWiqQT0vgJjZIVv1ouLek&ust=1710507261558000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCMjY_5_m84QDFQAAAAAdAAAAABAD",
-    // Add other details as needed
-  },
-  {
-    id: 2,
-    name: "Product 2",
-    description: "Description of product 2.",
-    price: 15.99,
-    image:
-      "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.clearskin.in%2Fblog%2Fsummer-fruits-for-glowing-healthy-skin%2F&psig=AOvVaw3xWiqQT0vgJjZIVv1ouLek&ust=1710507261558000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCMjY_5_m84QDFQAAAAAdAAAAABAD",
-    // Add other details as needed
-  },
-  // Add more products as needed
-];
+import { updateProducts } from "../redux/products/products";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
+import servicePath from "@/config";
 
 const ProductsPage = () => {
+  const dispatch = useDispatch();
+
+  const products = useSelector((state) => state.products || []);
+
+  useEffect(() => {
+    getProductDetails();
+  }, []);
+
+  const getProductDetails = async () => {
+    try {
+      const response = (await axios.post(servicePath + "/products", {}))?.data;
+
+      if (response?.status === 200) {
+        dispatch(updateProducts(response?.products || []));
+      }
+    } catch (e) {}
+  };
   return (
-    <div className="grid grid-cols-3 gap-4 p-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 p-4">
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product._id} product={product} />
       ))}
     </div>
   );

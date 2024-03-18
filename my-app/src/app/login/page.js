@@ -1,9 +1,9 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
-import { MessageAlert } from "../CommonComponents";
+import { MessageAlert, LoadingSpinner } from "../CommonComponents";
 import { updateAuth } from "../redux/auth/authSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { signIn } from "next-auth/react";
@@ -11,7 +11,8 @@ import { signIn } from "next-auth/react";
 const Login = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [message, setMessage] = React.useState({});
+  const [message, setMessage] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const navigateToRegisterPage = () => {
     router.push("/register");
@@ -19,7 +20,7 @@ const Login = () => {
 
   const handleLoginIn = async (values, setSubmitting) => {
     const { email, password } = values;
-
+    setLoading(true);
     try {
       const response = await signIn("credentials", {
         email,
@@ -45,7 +46,10 @@ const Login = () => {
             : "Invalid credentials.",
         type: data.status === 200 ? "" : "error",
       });
-    } catch (e) {}
+      setLoading(false);
+    } catch (e) {
+      setLoading(false);
+    }
   };
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">
@@ -94,12 +98,16 @@ const Login = () => {
                 </div>
               </div>
               <div>
-                <button
-                  type="submit"
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Login
-                </button>
+                {loading ? (
+                  <LoadingSpinner loadingMsg="Please wait, login in progress..." />
+                ) : (
+                  <button
+                    type="submit"
+                    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Login
+                  </button>
+                )}
               </div>
               <div>
                 {message.msg && (

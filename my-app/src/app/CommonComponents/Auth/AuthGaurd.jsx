@@ -12,7 +12,6 @@ export default function AuthGuard({ children }) {
   const [loading, setLoading] = useState(true);
 
   const session = useSession();
-
   useEffect(() => {
     if (session.status === "unauthenticated") {
       router.push("/login");
@@ -21,7 +20,9 @@ export default function AuthGuard({ children }) {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       const session = await getSession();
+      console.log("sessionINNNN", session);
 
       if (!session) {
         dispatch(resetAuth());
@@ -31,7 +32,7 @@ export default function AuthGuard({ children }) {
     };
 
     fetchData();
-  }, [router]);
+  }, [router.pathname, session.data]);
 
   if (loading) {
     return (

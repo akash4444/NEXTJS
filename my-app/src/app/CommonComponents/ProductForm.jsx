@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useFormik, Form, Field, ErrorMessage } from "formik";
+import { useFormik } from "formik";
 import * as Yup from "yup";
-import Select from "react-select";
 import { updateProductNames } from "../redux/products/productNames";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";

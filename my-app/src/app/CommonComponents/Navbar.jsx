@@ -13,11 +13,14 @@ const Navbar = () => {
   const { isLoggedIn, userId } = useSelector((state) => state.auth || {});
 
   const [logoutModal, setLogoutModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const logoutProcess = async () => {
+    setLoading(true);
     await signOut({ redirect: false });
     dispatch(resetAuth());
     setLogoutModal(false);
+    setLoading(false);
     router.push("/login");
   };
 
@@ -31,6 +34,9 @@ const Navbar = () => {
           message="Are you sure you want to sign out ?"
           closeButton={() => setLogoutModal(false)}
           submitButton={() => logoutProcess()}
+          loading={loading}
+          setLoading={setLoading}
+          loadingMsg="Please wait, Logging out in progress..."
         />
       )}
       <div className="container mx-auto px-4 flex justify-between items-center">

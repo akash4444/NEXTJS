@@ -7,11 +7,16 @@ const loggedInPages = ["/home", "/products", "/addproducts"];
 export async function middleware(request) {
   // const session = await getSession(request);
 
-  const session = request.cookies.get("next-auth.session-token");
+  const { value: session } =
+    request.cookies.get("next-auth.session-token") || {};
   const path = request.nextUrl.pathname;
   console.log("path", path);
+  console.log("session", session);
 
   if (path === "/") {
+    return NextResponse.next();
+  }
+  if (path.includes("/images")) {
     return NextResponse.next();
   }
 

@@ -1,10 +1,10 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import servicePath from "@/config";
-import { MessageAlert } from "../CommonComponents";
+import { MessageAlert, LoadingSpinner } from "../CommonComponents";
 import axios from "axios";
 import bcryptjs from "bcryptjs";
 
@@ -21,11 +21,13 @@ const RegisterSchema = Yup.object().shape({
 const Register = () => {
   const router = useRouter();
 
-  const [message, setMessage] = React.useState({});
+  const [message, setMessage] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (values) => {
     const { confirmPassword, ...rest } = values;
     try {
+      setLoading(true);
       const saltRounds = 10;
       const staticSalt = bcryptjs.genSaltSync(saltRounds);
       const hashedPassword = await bcryptjs.hash(rest.password, staticSalt);
@@ -38,12 +40,14 @@ const Register = () => {
         msg: data.message,
         type: data.status === 200 ? "success" : "error",
       });
+      setLoading(false);
     } catch (e) {
       const data = e?.response?.data;
       setMessage({
         msg: data.message,
         type: data.status === 200 ? "success" : "error",
       });
+      setLoading(false);
     }
   };
 
@@ -86,6 +90,7 @@ const Register = () => {
                   <Field
                     type="email"
                     name="email"
+                    disabled={loading}
                     className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                     placeholder="Email address"
                   />
@@ -101,6 +106,7 @@ const Register = () => {
                     name="password"
                     className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                     placeholder="Password"
+                    disabled={loading}
                   />
                   <ErrorMessage
                     name="password"
@@ -114,6 +120,7 @@ const Register = () => {
                     name="confirmPassword"
                     className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                     placeholder="Confirm Password"
+                    disabled={loading}
                   />
                   <ErrorMessage
                     name="confirmPassword"
@@ -123,28 +130,16 @@ const Register = () => {
                 </div>
               </div>
               <div>
-                <button
-                  type="submit"
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                    {/* <!-- Heroicon name: solid/lock-closed --> */}
-                    <svg
-                      className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M7 3c0-1.1.9-2 2-2s2 .9 2 2v2h4a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h4V3z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </span>
-                  Register
-                </button>
+                {loading ? (
+                  <LoadingSpinner loadingMsg="Please wait, Register in progress..." />
+                ) : (
+                  <button
+                    type="submit"
+                    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Register
+                  </button>
+                )}
               </div>
               <div>
                 {message.msg && (

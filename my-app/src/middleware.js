@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 const loggedOutPages = ["/login", "/register", "/home"];
 
-const loggedInPages = ["/home", "/products", "/addproducts"];
+const loggedInPages = ["/home", "/products", "/addproducts", "/editProduct"];
 
 export async function middleware(request) {
   // const session = await getSession(request);
@@ -10,8 +10,6 @@ export async function middleware(request) {
   const { value: session } =
     request.cookies.get("next-auth.session-token") || {};
   const path = request.nextUrl.pathname;
-  console.log("path", path);
-  console.log("session", session);
 
   if (path === "/") {
     return NextResponse.next();
@@ -29,7 +27,7 @@ export async function middleware(request) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
   } else {
-    if (loggedInPages.includes(path)) {
+    if (loggedInPages.includes(path) || path.startsWith("/editProduct/")) {
       return NextResponse.next();
     } else {
       return NextResponse.redirect(new URL("/products", request.url));

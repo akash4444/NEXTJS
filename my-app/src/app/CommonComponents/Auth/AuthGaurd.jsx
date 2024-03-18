@@ -22,8 +22,6 @@ export default function AuthGuard({ children }) {
     const fetchData = async () => {
       setLoading(true);
       const session = await getSession();
-      console.log("sessionINNNN", session);
-
       if (!session) {
         dispatch(resetAuth());
       }

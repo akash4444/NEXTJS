@@ -8,11 +8,18 @@ import axios from "axios";
 import servicePath from "@/config";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+import LoadingSpinner from "./LoadingSpinner";
 
-const ProductForm = ({ initialValues, handleSubmitButton }) => {
+const ProductForm = ({
+  initialValues,
+  handleSubmitButton,
+  loading,
+  loadingMsg,
+  isEditForm = false,
+}) => {
   const dispatch = useDispatch();
   const productNames = useSelector((state) => state.productNames);
-  const [loading, setLoading] = useState(true);
+  const [loadingPrdNames, setLoadingPrdNames] = useState(true);
   const [productCat, setProductCat] = useState([]);
   const [productList, setProductList] = useState([]);
 
@@ -40,7 +47,6 @@ const ProductForm = ({ initialValues, handleSubmitButton }) => {
     initialValues: initialValues,
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
       await handleSubmitButton(values);
     },
   });
@@ -69,6 +75,7 @@ const ProductForm = ({ initialValues, handleSubmitButton }) => {
 
   useEffect(() => {
     if (productList.length > 0) {
+      isEditForm && setFieldValue("productName", initialValues.productName);
       setShowProductName(true);
     }
   }, [productList]);
@@ -88,10 +95,10 @@ const ProductForm = ({ initialValues, handleSubmitButton }) => {
           ];
         }, []);
         setProductCat(cat);
-        setLoading(false);
+        setLoadingPrdNames(false);
       }
     } catch (e) {
-      setLoading(false);
+      setLoadingPrdNames(false);
     }
   };
 
@@ -105,6 +112,7 @@ const ProductForm = ({ initialValues, handleSubmitButton }) => {
           id="category"
           name="category"
           size="small"
+          disabled={loading || loadingPrdNames || isEditForm}
           options={productCat}
           getOptionLabel={(option) => option.label}
           value={
@@ -139,6 +147,7 @@ const ProductForm = ({ initialValues, handleSubmitButton }) => {
             name="productName"
             size="small"
             options={[]}
+            disabled={loading || loadingPrdNames || isEditForm}
             value=""
             getOptionLabel={(option) => option.label || ""}
             onChange={(event, value) =>
@@ -159,6 +168,7 @@ const ProductForm = ({ initialValues, handleSubmitButton }) => {
             name="productName"
             size="small"
             options={productList}
+            disabled={loading || loadingPrdNames || isEditForm}
             value={
               productList.find(
                 (option) => option.value === values.productName
@@ -191,6 +201,7 @@ const ProductForm = ({ initialValues, handleSubmitButton }) => {
         <textarea
           id="description"
           name="description"
+          disabled={loading}
           onChange={handleChange}
           onBlur={handleBlur}
           value={values.description}
@@ -208,6 +219,7 @@ const ProductForm = ({ initialValues, handleSubmitButton }) => {
           id="price"
           name="price"
           type="number"
+          disabled={loading}
           onChange={handleChange}
           onBlur={handleBlur}
           value={values.price}
@@ -217,12 +229,16 @@ const ProductForm = ({ initialValues, handleSubmitButton }) => {
           <div className="text-red-500">{errors.price}</div>
         ) : null}
       </div>
-      <button
-        type="submit"
-        className="bg-blue-500 text-white font-semibold py-2 px-4 rounded"
-      >
-        Submit
-      </button>
+      {loading ? (
+        <LoadingSpinner loadingMsg={loadingMsg} />
+      ) : (
+        <button
+          type="submit"
+          className="bg-blue-500 text-white font-semibold py-2 px-4 rounded"
+        >
+          Submit
+        </button>
+      )}
     </form>
   );
 };

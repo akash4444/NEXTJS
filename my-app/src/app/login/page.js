@@ -76,6 +76,7 @@ const Login = () => {
                     name="email"
                     className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                     placeholder="Email address"
+                    disabled={loading}
                   />
                   <ErrorMessage
                     name="email"
@@ -86,6 +87,7 @@ const Login = () => {
                 <div>
                   <Field
                     type="password"
+                    disabled={loading}
                     name="password"
                     className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                     placeholder="Password"

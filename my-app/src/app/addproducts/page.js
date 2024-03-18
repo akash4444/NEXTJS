@@ -34,12 +34,14 @@ const AddProductForm = () => {
         msg: data.message,
         type: data.status === 200 ? "success" : "error",
       });
+      setSubmitting(false);
     } catch (e) {
       const data = e?.response?.data;
       setMessage({
         msg: data.message,
         type: data.status === 200 ? "success" : "error",
       });
+      setSubmitting(false);
     }
   };
 
@@ -49,6 +51,8 @@ const AddProductForm = () => {
       <ProductForm
         initialValues={initialState}
         handleSubmitButton={saveProductDetails}
+        loading={submitting}
+        loadingMsg="Please wait, Product saving in progress..."
       />
       <div>
         {message.msg && (

@@ -6,6 +6,10 @@ const userModel = new mongoose.Schema(
     password: { type: String, required: true },
     role: { type: String, default: "user" },
     active: { type: String, default: true },
+    otp: { type: String, default: "" },
+    otpExpiresAt: {
+      type: Date,
+    },
     refreshToken: { type: String, default: "" },
     resetPasswordToken: { type: String, default: "" },
     resetPasswordExpires: { type: Date, default: "" },

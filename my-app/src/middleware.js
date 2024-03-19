@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const loggedOutPages = ["/login", "/register", "/home"];
+const loggedOutPages = ["/login", "/register", "/home", "/forgotPassword"];
 
 const loggedInPages = ["/home", "/products", "/addproducts", "/editProduct"];
 

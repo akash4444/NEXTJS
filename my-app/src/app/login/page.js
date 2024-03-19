@@ -18,6 +18,10 @@ const Login = () => {
     router.push("/register");
   };
 
+  const navigateToForgotPasswordPage = () => {
+    router.push("/forgotPassword");
+  };
+
   const handleLoginIn = async (values, setSubmitting) => {
     const { email, password } = values;
     setLoading(true);
@@ -123,6 +127,15 @@ const Login = () => {
             </Form>
           )}
         </Formik>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          <a
+            href="#"
+            onClick={() => navigateToForgotPasswordPage()}
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+          >
+            Forgot password ?
+          </a>
+        </p>
         <p className="mt-2 text-center text-sm text-gray-600">
           Don't have an account yet?
           <a

@@ -23,7 +23,17 @@ export default function RootLayout({ children, ...rest }) {
           <Providers>
             <AuthGuard>
               <Navbar />
-              {children}
+              <div className="p-24 bg-gradient-to-r from-purple-500 to-pink-500">
+                {children}
+              </div>
+              <footer className="bg-gray-800 text-white fixed bottom-0 w-full z-999999">
+                <div className="container mx-auto px-4 py-3">
+                  <p>
+                    &copy; {new Date().getFullYear()} Your Website. All rights
+                    reserved.
+                  </p>
+                </div>
+              </footer>
             </AuthGuard>
           </Providers>
         </SessionProvider>

@@ -25,7 +25,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-800 py-4">
+    <nav className="bg-gray-800 text-white fixed top-0 w-full py-4 z-10">
       {logoutModal && (
         <AlertModal
           open={logoutModal}

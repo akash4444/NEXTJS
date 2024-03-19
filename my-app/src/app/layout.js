@@ -18,7 +18,7 @@ export default function RootLayout({ children, ...rest }) {
   };
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className="bg-gradient-to-r from-purple-500 to-pink-500">
         <SessionProvider session={getServerSes()}>
           <Providers>
             <AuthGuard>

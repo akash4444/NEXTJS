@@ -135,7 +135,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center">
+    <div className="flex justify-center items-center">
       <div className="p-8 min-w-[350px] bg-white rounded shadow-md rounded-lg border border-gray-300">
         <h2 className="text-2xl font-semibold mb-4">Forgot Password</h2>
         {["send", "verify"].includes(isOtpSent) ? (

@@ -23,7 +23,7 @@ export default function RootLayout({ children, ...rest }) {
           <Providers>
             <AuthGuard>
               <Navbar />
-              <div className="p-24 bg-gradient-to-r from-purple-500 to-pink-500">
+              <div className="px-2 py-24 md:p-24 bg-gradient-to-r from-purple-500 to-pink-500">
                 {children}
               </div>
               <footer className="bg-gray-800 text-white fixed bottom-0 w-full z-999999">

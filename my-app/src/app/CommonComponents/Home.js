@@ -4,11 +4,11 @@ const Home = () => {
   return (
     <div>
       <div
-        className="min-h-screen bg-cover bg-center"
-        style={{ backgroundImage: 'url("/homepage.jpg")' }}
+        className="relative min-w-[350px] md:min-w-auto bg-contain bg-center bg-no-repeat  h-[400px] flex justify-center items-center"
+        style={{ backgroundImage: "url('/images/logo.png')" }}
       >
-        <div className="container mx-auto px-4 py-8 text-center">
-          <h1 className="text-5xl font-bold text-white">
+        <div className="container md:mx-auto px-4 py-8 text-center">
+          <h1 className="text-2xl md:text-5xl font-bold text-white">
             Welcome to Fresh Fare Shop
           </h1>
           <p className="text-xl mt-4 text-white">

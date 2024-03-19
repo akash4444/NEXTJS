@@ -40,7 +40,10 @@ const Navbar = () => {
         />
       )}
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <div></div>
+        <div className="flex items-center">
+          <img src="/images/logo.png" alt="Logo" className="h-8 mr-2" />{" "}
+          <h1 className="text-lg font-semibold">Fresh Fare Shop</h1>
+        </div>
         <ul className="flex space-x-4">
           <li>
             <Link className="text-white hover:text-gray-300" href="/">

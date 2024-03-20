@@ -6,19 +6,30 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import servicePath from "@/config";
 import { AlertModal } from "../CommonComponents";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { getCartItems } from "../commonFunctions/commonFunctions";
 
 const ProductsPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
+  const currentPath = usePathname();
+  const { userId, isLoggedIn } = useSelector((state) => state.auth || {});
+
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [addingToCart, setAddingToCart] = useState("");
 
   const products = useSelector((state) => state.products || []);
 
   useEffect(() => {
     getProductDetails();
-  }, []);
+  }, [currentPath]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      getCartItems(dispatch, { userId: userId });
+    }
+  }, [currentPath, userId]);
 
   const getProductDetails = async () => {
     try {
@@ -52,6 +63,28 @@ const ProductsPage = () => {
   const onEdit = (productId) => {
     router.push(`/editProduct/${productId}`);
   };
+
+  const addToCart = async (product) => {
+    try {
+      setAddingToCart(product._id);
+
+      const payload = {
+        ...product,
+        quantity: 1,
+        userId,
+      };
+
+      const response = (await axios.post(servicePath + "/addToCart", payload))
+        ?.data;
+
+      if (response?.status === 200) {
+        setAddingToCart("");
+        await getCartItems(dispatch, { userId: userId });
+      }
+    } catch (e) {
+      setAddingToCart("");
+    }
+  };
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 p-4">
       {deleteDialog && (
@@ -72,6 +105,8 @@ const ProductsPage = () => {
           product={product}
           onDelete={() => setDeleteDialog(product._id)}
           onEdit={() => onEdit(product._id)}
+          addToCart={() => addToCart(product)}
+          addingToCart={addingToCart}
         />
       ))}
     </div>

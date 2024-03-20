@@ -9,6 +9,7 @@ import servicePath from "@/config";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import LoadingSpinner from "./LoadingSpinner";
+import { useRouter, usePathname } from "next/navigation";
 
 const ProductForm = ({
   initialValues,
@@ -18,6 +19,7 @@ const ProductForm = ({
   isEditForm = false,
 }) => {
   const dispatch = useDispatch();
+  const currentPath = usePathname();
   const productNames = useSelector((state) => state.productNames);
   const [loadingPrdNames, setLoadingPrdNames] = useState(true);
   const [productCat, setProductCat] = useState([]);
@@ -53,6 +55,7 @@ const ProductForm = ({
 
   useEffect(() => {
     getProductNames();
+    console.log("====getProductNames");
   }, []);
 
   useEffect(() => {

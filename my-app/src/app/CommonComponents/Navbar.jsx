@@ -4,13 +4,20 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import AlertModal from "./AlertModal";
 import { resetAuth } from "../redux/auth/authSlice";
+import { resetProductNames } from "../redux/products/productNames";
+import { resetProducts } from "../redux/products/products";
+import { resetCart } from "../redux/cart/cart";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
+import CartIcon from "./CartIcon";
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { isLoggedIn, userId } = useSelector((state) => state.auth || {});
+  const { isLoggedIn, userId, role } = useSelector((state) => state.auth || {});
+  const { items = [] } = useSelector((state) => state.cart || {});
+
+  const isAdmin = role === "admin";
 
   const [logoutModal, setLogoutModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,6 +32,9 @@ const Navbar = () => {
     setLoading(true);
     await signOut({ redirect: false });
     dispatch(resetAuth());
+    dispatch(resetProductNames());
+    dispatch(resetProducts());
+    dispatch(resetCart());
     setLogoutModal(false);
     setLoading(false);
     router.push("/login");
@@ -70,12 +80,20 @@ const Navbar = () => {
                     Products
                   </Link>
                 </li>
+                {isAdmin && (
+                  <li>
+                    <Link
+                      className="text-white hover:text-gray-300"
+                      href="/addproducts"
+                    >
+                      Add Product
+                    </Link>
+                  </li>
+                )}
+
                 <li>
-                  <Link
-                    className="text-white hover:text-gray-300"
-                    href="/addproducts"
-                  >
-                    Add Product
+                  <Link className="text-white hover:text-gray-300" href="/cart">
+                    <CartIcon count={items.length} />
                   </Link>
                 </li>
               </>
@@ -106,7 +124,11 @@ const Navbar = () => {
             )}
           </ul>
 
-          <ul className={`${!isMenuOpen ? "block" : "hidden"} md:hidden`}>
+          <ul
+            className={`${
+              !isMenuOpen ? "flex items-center justify-between gap-4" : "hidden"
+            } md:hidden`}
+          >
             {!isLoggedIn ? (
               <li>
                 <Link className="text-white hover:text-gray-300" href="/login">
@@ -121,15 +143,22 @@ const Navbar = () => {
                 </Link>
               </li>
             ) : (
-              <li>
-                <Link
-                  className="text-white hover:text-gray-300"
-                  onClick={() => setLogoutModal(true)}
-                  href="#"
-                >
-                  Logout
-                </Link>
-              </li>
+              <>
+                <li>
+                  <Link className="text-white hover:text-gray-300" href="/cart">
+                    <CartIcon count={items.length} />
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="text-white hover:text-gray-300"
+                    onClick={() => setLogoutModal(true)}
+                    href="#"
+                  >
+                    Logout
+                  </Link>
+                </li>
+              </>
             )}
           </ul>
 
@@ -154,12 +183,22 @@ const Navbar = () => {
                         Products
                       </Link>
                     </li>
+                    {isAdmin && (
+                      <li>
+                        <Link
+                          className="text-white hover:text-gray-300 px-3 py-2 rounded-md block"
+                          href="/addproducts"
+                        >
+                          Add Product
+                        </Link>
+                      </li>
+                    )}
                     <li>
                       <Link
                         className="text-white hover:text-gray-300 px-3 py-2 rounded-md block"
-                        href="/addproducts"
+                        href="/cart"
                       >
-                        Add Product
+                        Cart
                       </Link>
                     </li>
                   </>

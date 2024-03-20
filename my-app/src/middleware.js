@@ -1,12 +1,8 @@
 import { NextResponse } from "next/server";
-
-const loggedOutPages = ["/login", "/register", "/home", "/forgotPassword"];
-
-const loggedInPages = ["/home", "/products", "/addproducts", "/editProduct"];
+import { loggedInPages, loggedOutPages } from "./constant";
+import { useSession, getSession } from "next-auth/react";
 
 export async function middleware(request) {
-  // const session = await getSession(request);
-
   const { value: session } =
     request.cookies.get("next-auth.session-token") || {};
   const path = request.nextUrl.pathname;

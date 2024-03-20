@@ -1,17 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { useSession, getSession } from "next-auth/react";
-import { resetAuth } from "../../redux/auth/authSlice";
+import { resetAuth, updateAuth } from "../../redux/auth/authSlice";
+import { adminInPages } from "@/constant";
 
 export default function AuthGuard({ children }) {
   const router = useRouter();
+  const currentPath = usePathname();
   const dispatch = useDispatch();
-  const authData = useSelector((state) => state.auth || {});
+  const { role } = useSelector((state) => state.auth || {});
   const [loading, setLoading] = useState(true);
+  const isAdmin = role === "admin";
 
   const session = useSession();
+
   useEffect(() => {
     if (session.status === "unauthenticated") {
       router.push("/login");
@@ -25,12 +29,19 @@ export default function AuthGuard({ children }) {
       if (!session) {
         dispatch(resetAuth());
       }
-
+      console.log("session", session);
+      dispatch(updateAuth({ role: session?.user?.role }));
       setLoading(false);
     };
-
+    if (
+      !isAdmin &&
+      (adminInPages.includes(currentPath) ||
+        currentPath.startsWith("/editProduct/"))
+    ) {
+      router.push("/products");
+    }
     fetchData();
-  }, [router.pathname, session.data]);
+  }, [currentPath]);
 
   if (loading) {
     return (

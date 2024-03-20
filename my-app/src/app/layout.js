@@ -16,6 +16,7 @@ export default function RootLayout({ children, ...rest }) {
   const getServerSes = async () => {
     return await getServerSession();
   };
+
   return (
     <html lang="en">
       <body className="bg-gradient-to-r from-purple-500 to-pink-500">

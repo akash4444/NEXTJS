@@ -4,7 +4,7 @@ const userModel = new mongoose.Schema(
   {
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    role: { type: String, default: "user" },
+    role: { type: String, enum: ["admin", "user"], default: "user" },
     active: { type: String, default: true },
     otp: { type: String, default: "" },
     otpExpiresAt: {

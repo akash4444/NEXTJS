@@ -29,6 +29,18 @@ export async function POST(request) {
       );
 
       if (fIndex > -1) {
+        if (order.orders[fIndex].status !== "ordered") {
+          return NextResponse.json(
+            {
+              message: `Order already ${order.orders[fIndex].status}`,
+              status: 200,
+              type,
+              showAlert: true,
+            },
+            { status: 200 }
+          );
+        }
+
         order.orders[fIndex].status = type;
         await order.save();
       }

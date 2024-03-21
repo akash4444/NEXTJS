@@ -8,6 +8,7 @@ import { resetProductNames } from "../redux/products/productNames";
 import { resetProducts } from "../redux/products/products";
 import { resetCart } from "../redux/cart/cart";
 import { resetOrders } from "../redux/orders/orders";
+import { resetAdminOrders } from "../redux/adminOrders/adminOrders";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import CartIcon from "./CartIcon";
@@ -37,6 +38,7 @@ const Navbar = () => {
     dispatch(resetProducts());
     dispatch(resetCart());
     dispatch(resetOrders());
+    dispatch(resetAdminOrders());
     setLogoutModal(false);
     setLoading(false);
     router.push("/login");
@@ -83,14 +85,24 @@ const Navbar = () => {
                   </Link>
                 </li>
                 {isAdmin && (
-                  <li>
-                    <Link
-                      className="text-white hover:text-gray-300"
-                      href="/addproducts"
-                    >
-                      Add Product
-                    </Link>
-                  </li>
+                  <>
+                    <li>
+                      <Link
+                        className="text-white hover:text-gray-300"
+                        href="/addproducts"
+                      >
+                        Add Product
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        className="text-white hover:text-gray-300"
+                        href="/adminOrders"
+                      >
+                        Admin Orders
+                      </Link>
+                    </li>
+                  </>
                 )}
                 <li>
                   <Link
@@ -193,14 +205,24 @@ const Navbar = () => {
                       </Link>
                     </li>
                     {isAdmin && (
-                      <li>
-                        <Link
-                          className="text-white hover:text-gray-300 px-3 py-2 rounded-md block"
-                          href="/addproducts"
-                        >
-                          Add Product
-                        </Link>
-                      </li>
+                      <>
+                        <li>
+                          <Link
+                            className="text-white hover:text-gray-300 px-3 py-2 rounded-md block"
+                            href="/addproducts"
+                          >
+                            Add Product
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className="text-white hover:text-gray-300 px-3 py-2 rounded-md block"
+                            href="/adminOrders"
+                          >
+                            Admin Orders
+                          </Link>
+                        </li>
+                      </>
                     )}
                     <li>
                       <Link

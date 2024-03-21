@@ -18,6 +18,7 @@ export const loggedInPages = [
   "/editProduct",
   "/cart",
   "/orders",
+  "/adminOrders",
 ];
 
-export const adminInPages = ["/addproducts", "/editProduct"];
+export const adminInPages = ["/addproducts", "/editProduct", "/adminOrders"];

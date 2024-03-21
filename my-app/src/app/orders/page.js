@@ -9,9 +9,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useSelector, useDispatch } from "react-redux";
-import { updateCart } from "../redux/cart/cart";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
 import ImageSection from "./ImageSection";
 import { getOrders, updateOrder } from "../commonFunctions/commonFunctions";
 import { LoadingSpinner, AlertModal } from "../CommonComponents";
@@ -38,7 +36,8 @@ const OrderPage = () => {
   const cancelOrder = async (order) => {
     const payload = { orderId: order._id, userId, type: "cancelled" };
     setOrderCancelling(order._id);
-    await updateOrder(dispatch, payload);
+    const response = await updateOrder(dispatch, payload);
+    response.showAlert && alert(response.message);
     setOrderCancelling("");
   };
 
@@ -57,7 +56,10 @@ const OrderPage = () => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `invoice-${order._id}.pdf`);
+      link.setAttribute(
+        "download",
+        `invoice-${order._id}-${moment().format("YYYY-MM-DD_HH-mm-ss")}.pdf`
+      );
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
@@ -118,7 +120,7 @@ const OrderPage = () => {
               <div className="mt-4 flex justify-between">
                 {orderDownloading === order._id ? (
                   <LoadingSpinner loadingMsg="Please wait. Downloading your order invoice..." />
-                ) : order.status === "ordered" ? (
+                ) : order.status === "delivered" ? (
                   <Button
                     onClick={() => handleDownloadInvoice(order)}
                     variant="contained"
@@ -140,9 +142,18 @@ const OrderPage = () => {
                     Cancel Order
                   </Button>
                 ) : (
-                  <h2 className="text-red-500 text-lg font-semibold">
-                    Cancelled
-                  </h2>
+                  <p
+                    className={
+                      order.status === "delivered"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }
+                  >
+                    <strong>
+                      {order.status.charAt(0).toUpperCase() +
+                        order.status.slice(1)}
+                    </strong>
+                  </p>
                 )}
               </div>
             </div>

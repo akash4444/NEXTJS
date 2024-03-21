@@ -2,6 +2,7 @@ import axios from "axios";
 import servicePath from "@/config";
 import { updateCart } from "../redux/cart/cart";
 import { updateOrders } from "../redux/orders/orders";
+import { updateAdminOrders } from "../redux/adminOrders/adminOrders";
 
 export const getCartItems = async (dispatch, payload) => {
   try {
@@ -80,6 +81,34 @@ export const getOrders = async (dispatch, payload) => {
 
     if (response?.status === 200) {
       dispatch(updateOrders(response?.orderItems || {}));
+    }
+  } catch (e) {}
+};
+
+export const getAdminOrders = async (dispatch, payload) => {
+  try {
+    const response = (await axios.post(servicePath + "/adminOrders", {}))?.data;
+
+    if (response?.status === 200) {
+      dispatch(updateAdminOrders(response?.adminOrderItems || []));
+    }
+  } catch (e) {}
+};
+
+export const updateAdminPlacedOrders = async (dispatch, payload) => {
+  const { type, userId, orderId = "" } = payload;
+  try {
+    const response = (
+      await axios.post(servicePath + "/adminOrders/updateAdminOrders", {
+        type,
+        userId,
+        orderId,
+      })
+    )?.data;
+
+    if (response?.status === 200) {
+      await getAdminOrders(dispatch);
+      return response;
     }
   } catch (e) {}
 };

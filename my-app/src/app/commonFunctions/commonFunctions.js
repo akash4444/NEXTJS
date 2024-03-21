@@ -1,6 +1,7 @@
 import axios from "axios";
 import servicePath from "@/config";
 import { updateCart } from "../redux/cart/cart";
+import { updateOrders } from "../redux/orders/orders";
 
 export const getCartItems = async (dispatch, payload) => {
   try {
@@ -27,6 +28,58 @@ export const updateCartItems = async (dispatch, payload) => {
 
     if (response?.status === 200) {
       await getCartItems(dispatch, { userId: userId });
+    }
+  } catch (e) {}
+};
+
+export const clearCartItems = async (dispatch, payload) => {
+  try {
+    const { userId } = payload;
+    const response = (
+      await axios.post(servicePath + "/clearCart", {
+        userId,
+      })
+    )?.data;
+
+    if (response?.status === 200) {
+      await getCartItems(dispatch, { userId: userId });
+    }
+  } catch (e) {}
+};
+
+export const updateOrder = async (dispatch, payload) => {
+  try {
+    const { type, userId, items, orderId = "" } = payload;
+    const response = (
+      await axios.post(servicePath + "/updateOrder", {
+        type,
+        userId,
+        items,
+        orderId,
+      })
+    )?.data;
+
+    if (response?.status === 200 && type === "ordered") {
+      await clearCartItems(dispatch, { userId: userId });
+      return response;
+    } else if (response?.status === 200 && type === "cancelled") {
+      await getOrders(dispatch, payload);
+      return response;
+    }
+  } catch (e) {
+    const data = e?.response?.data;
+    return data;
+  }
+};
+
+export const getOrders = async (dispatch, payload) => {
+  try {
+    const response = (
+      await axios.post(servicePath + "/orders", { userId: payload.userId })
+    )?.data;
+
+    if (response?.status === 200) {
+      dispatch(updateOrders(response?.orderItems || {}));
     }
   } catch (e) {}
 };

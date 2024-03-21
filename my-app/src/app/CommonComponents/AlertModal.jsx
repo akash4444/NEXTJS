@@ -39,10 +39,16 @@ const AlertModal = ({
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button variant="outlined" color="error" onClick={closeButton}>
-                {nobtn}
-              </Button>
-              <Button variant="contained" color="error" onClick={submitButton}>
+              {nobtn && (
+                <Button variant="outlined" color="error" onClick={closeButton}>
+                  {nobtn}
+                </Button>
+              )}
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={submitButton}
+              >
                 {yesbtn}
               </Button>
             </DialogActions>

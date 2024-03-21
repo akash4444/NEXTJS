@@ -7,6 +7,7 @@ import { resetAuth } from "../redux/auth/authSlice";
 import { resetProductNames } from "../redux/products/productNames";
 import { resetProducts } from "../redux/products/products";
 import { resetCart } from "../redux/cart/cart";
+import { resetOrders } from "../redux/orders/orders";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import CartIcon from "./CartIcon";
@@ -35,6 +36,7 @@ const Navbar = () => {
     dispatch(resetProductNames());
     dispatch(resetProducts());
     dispatch(resetCart());
+    dispatch(resetOrders());
     setLogoutModal(false);
     setLoading(false);
     router.push("/login");
@@ -90,7 +92,14 @@ const Navbar = () => {
                     </Link>
                   </li>
                 )}
-
+                <li>
+                  <Link
+                    className="text-white hover:text-gray-300"
+                    href="/orders"
+                  >
+                    Orders
+                  </Link>
+                </li>
                 <li>
                   <Link className="text-white hover:text-gray-300" href="/cart">
                     <CartIcon count={items.length} />
@@ -193,6 +202,14 @@ const Navbar = () => {
                         </Link>
                       </li>
                     )}
+                    <li>
+                      <Link
+                        className="text-white hover:text-gray-300 px-3 py-2 rounded-md block"
+                        href="/orders"
+                      >
+                        Orders
+                      </Link>
+                    </li>
                     <li>
                       <Link
                         className="text-white hover:text-gray-300 px-3 py-2 rounded-md block"

@@ -8,7 +8,10 @@ import ImageSection from "./ImageSection";
 import {
   updateCartItems,
   getCartItems,
+  updateOrder,
+  clearCartItems,
 } from "../commonFunctions/commonFunctions";
+import { LoadingSpinner, AlertModal } from "../CommonComponents";
 
 const CartPage = () => {
   const dispatch = useDispatch();
@@ -18,11 +21,32 @@ const CartPage = () => {
 
   const isAdmin = role === "admin";
 
+  const [placingOrder, setPlacingOrder] = useState(false);
+  const [clearingCart, setClearingCart] = useState(false);
+  const [orderedModal, setOrderedModal] = useState(false);
+
   useEffect(() => {
     if (isLoggedIn) {
       getCartItems(dispatch, { userId: userId });
     }
   }, [userId]);
+
+  const placeYourOrder = async () => {
+    const payload = { items: items, userId: userId, type: "ordered" };
+    setPlacingOrder(true);
+    const response = await updateOrder(dispatch, payload);
+    if (response.status === 200) {
+      setOrderedModal(response.type);
+    }
+    setPlacingOrder(false);
+  };
+
+  const clearYourCart = async () => {
+    const payload = { userId: userId };
+    setClearingCart(true);
+    const response = await clearCartItems(dispatch, payload);
+    setClearingCart(false);
+  };
 
   // Function to remove a product from the cart
   const removeFromCart = async (product) => {
@@ -51,10 +75,35 @@ const CartPage = () => {
     0
   );
 
+  const navigateToOrderPage = () => {
+    setOrderedModal("");
+    router.push("/orders");
+  };
+
   return (
     <div className="container mx-auto py-8 px-4">
+      {orderedModal && (
+        <AlertModal
+          open={orderedModal}
+          yesbtn="Check your order"
+          nobtn=""
+          message={`Your order ${
+            orderedModal === "ordered" ? "placed" : "cancelled"
+          } successfully.`}
+          closeButton={() => setOrderedModal("")}
+          submitButton={() => navigateToOrderPage()}
+        />
+      )}
       <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
-      {items.length === 0 ? (
+      {placingOrder || clearingCart ? (
+        <LoadingSpinner
+          loadingMsg={
+            placingOrder
+              ? "Please wait. Placing your order..."
+              : "Please wait. Clearing your cart..."
+          }
+        />
+      ) : items.length === 0 ? (
         <div className="text-center">
           <p className="text-gray-600 text-lg">
             No items available in your cart.
@@ -125,7 +174,7 @@ const CartPage = () => {
                     </div>
                   </div>
                   <button
-                    className="text-red-600 hover:text-red-800 focus:outline-none border border-red-600 hover:bg-red-600 text-white px-4 py-2 rounded-md"
+                    className="text-red-600 hover:text-red-800 focus:outline-none border border-red-600 hover:bg-red-600 text-black px-4 py-2 rounded-md"
                     onClick={() => removeFromCart(item)}
                   >
                     Remove
@@ -143,10 +192,37 @@ const CartPage = () => {
               <h2 className="text-lg font-semibold">
                 Total: ${totalBill.toFixed(2)}
               </h2>
-              {/* Add checkout button or other actions here */}
-              <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md border border-blue-500 hover:border-blue-600">
-                Place Order
-              </button>
+            </div>
+          </div>
+          <div className="fixed bottom-12 left-0 w-full bg-white shadow-md px-4 py-3 flex justify-between">
+            {clearingCart ? (
+              <LoadingSpinner loadingMsg="Please wait. Clearing your cart..." />
+            ) : (
+              <div className="max-h-6">
+                <button
+                  className="text-red-600 hover:text-red-800 focus:outline-none border border-red-600 hover:bg-red-600 text-black px-4 py-2 rounded-md"
+                  onClick={() => clearYourCart()}
+                  disabled={placingOrder}
+                >
+                  Clear Cart
+                </button>
+              </div>
+            )}
+            <div className="flex justify-between items-center gap-6">
+              <p className="text-lg font-semibold">
+                Total: ${totalBill.toFixed(2)}
+              </p>
+              {placingOrder ? (
+                <LoadingSpinner loadingMsg="Please wait. Placing your order..." />
+              ) : (
+                <button
+                  onClick={() => placeYourOrder()}
+                  disabled={clearingCart}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded ml-4"
+                >
+                  Place Order
+                </button>
+              )}
             </div>
           </div>
         </>

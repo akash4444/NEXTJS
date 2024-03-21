@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const orderSchema = new mongoose.Schema(
   {
     status: { type: String, required: true, default: "ordered" },
-    items: { type: String, default: [] },
+    items: { type: Array, default: [] },
   },
   {
     timestamps: true,

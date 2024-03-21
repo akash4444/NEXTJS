@@ -1,22 +1,32 @@
 import { NextResponse } from "next/server";
-import { CartModel } from "@/lib/Model/cart";
 import { DBConnect } from "../dbconnect";
+import { CartModel } from "@/lib/Model/cart";
 
 DBConnect();
+
 export async function POST(request) {
   const payload = await request.json();
-  try {
-    const cartItems = await CartModel.find({ userId: payload.userId });
 
-    if (!cartItems || cartItems?.length === 0) {
+  const { userId } = payload;
+
+  try {
+    const deletedData = await CartModel.findOneAndDelete({ userId });
+
+    if (!deletedData) {
       return NextResponse.json(
-        { message: "success", status: 200, cartItems: {} },
+        {
+          message: `No data found`,
+          status: 200,
+        },
         { status: 200 }
       );
     }
 
     return NextResponse.json(
-      { message: "success", status: 200, cartItems: cartItems[0] },
+      {
+        message: `The cart has been successfully cleared.`,
+        status: 200,
+      },
       { status: 200 }
     );
   } catch {

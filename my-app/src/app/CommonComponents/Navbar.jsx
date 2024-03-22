@@ -33,15 +33,15 @@ const Navbar = () => {
   const logoutProcess = async () => {
     setLoading(true);
     await signOut({ redirect: false });
+    setLogoutModal(false);
+    setLoading(false);
+    router.push("/login");
     dispatch(resetAuth());
     dispatch(resetProductNames());
     dispatch(resetProducts());
     dispatch(resetCart());
     dispatch(resetOrders());
     dispatch(resetAdminOrders());
-    setLogoutModal(false);
-    setLoading(false);
-    router.push("/login");
   };
 
   return (

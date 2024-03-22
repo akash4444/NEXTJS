@@ -25,11 +25,19 @@ const CartPage = () => {
   const [clearingCart, setClearingCart] = useState(false);
   const [orderedModal, setOrderedModal] = useState(false);
 
+  const [loadingCart, setLoadingCart] = useState(false);
+
   useEffect(() => {
     if (isLoggedIn) {
-      getCartItems(dispatch, { userId: userId });
+      fetchCartItems();
     }
   }, [userId]);
+
+  const fetchCartItems = async () => {
+    setLoadingCart(true);
+    await getCartItems(dispatch, { userId: userId });
+    setLoadingCart(false);
+  };
 
   const placeYourOrder = async () => {
     const payload = { items: items, userId: userId, type: "ordered" };
@@ -94,14 +102,17 @@ const CartPage = () => {
           submitButton={() => navigateToOrderPage()}
         />
       )}
-      <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
-      {placingOrder || clearingCart ? (
+      <h1 className="text-3xl font-semibold text-center mb-4">Your Cart</h1>
+      {placingOrder || clearingCart || loadingCart ? (
         <LoadingSpinner
           loadingMsg={
             placingOrder
               ? "Please wait. Placing your order..."
-              : "Please wait. Clearing your cart..."
+              : clearingCart
+              ? "Please wait. Clearing your cart..."
+              : "Please wait. Loading cart..."
           }
+          size="lg"
         />
       ) : items.length === 0 ? (
         <div className="text-center">
@@ -116,14 +127,14 @@ const CartPage = () => {
             {items.map((item) => (
               <div
                 key={item.productId}
-                className="bg-white shadow-md rounded-lg p-4 flex items-center"
+                className="bg-white shadow-md rounded-lg p-4 flex flex-col md:flex-row items-center"
               >
                 <ImageSection
                   productName={item.productName}
                   image={item.image}
                 />
 
-                <div className="flex-grow">
+                <div className="flex-grow md:ml-4">
                   <h2 className="text-lg font-semibold mb-2">
                     {item.productName}
                   </h2>
@@ -136,52 +147,28 @@ const CartPage = () => {
                         className="text-gray-600 focus:outline-none border border-gray-300 px-3 py-1 rounded"
                         onClick={() => decrementQuantity(item)}
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M20 12H4"
-                          />
-                        </svg>
+                        -
                       </button>
                       <span className="mx-2">{item.quantity}</span>
                       <button
                         className="text-gray-600 focus:outline-none border border-gray-300 px-3 py-1 rounded"
                         onClick={() => incrementQuantity(item)}
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                          />
-                        </svg>
+                        +
                       </button>
                     </div>
                   </div>
-                  <button
-                    className="text-red-600 hover:text-red-800 focus:outline-none border border-red-600 hover:bg-red-600 text-black px-4 py-2 rounded-md"
-                    onClick={() => removeFromCart(item)}
-                  >
-                    Remove
-                  </button>
-                </div>
-                <div className="font-semibold text-xl">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  <div className="flex items-center">
+                    <button
+                      className="text-red-600 hover:text-red-800 focus:outline-none border border-red-600 hover:bg-red-600 text-black px-4 py-2 rounded-md mr-2"
+                      onClick={() => removeFromCart(item)}
+                    >
+                      Remove
+                    </button>
+                    <div className="font-semibold text-xl">
+                      ${(item.price * item.quantity).toFixed(2)}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}

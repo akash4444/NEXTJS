@@ -16,15 +16,21 @@ export default function AdminOrdersPage() {
   const adminOrders = useSelector((state) => state.adminOrders || []);
 
   const [orderUpdating, setOrderUpdating] = useState("");
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
   const isAdmin = role === "admin";
 
   useEffect(() => {
     if (userId && isAdmin) {
-      getAdminOrders(dispatch, {});
+      fetchOrders();
     }
   }, [userId]);
 
+  const fetchOrders = async () => {
+    setLoadingOrders(true);
+    await getAdminOrders(dispatch, {});
+    setLoadingOrders(false);
+  };
   const handleDeliverOrder = async (order) => {
     try {
       setOrderUpdating(order.orderId);
@@ -43,43 +49,48 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Admin Orders</h1>
+      <h1 className="text-3xl font-semibold text-center mb-4">Admin Orders</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {adminOrders.map((order) => (
-          <div
-            key={order.orderId}
-            className="bg-white shadow-md p-4 rounded-lg mb-4"
-          >
-            <p>
-              <strong>Order ID:</strong> {order.orderId}
-            </p>
-            <p>
-              <strong>User ID:</strong> {order.userId}
-            </p>
-            {orderUpdating === order.orderId ? (
-              <LoadingSpinner loadingMsg="Updating order" />
-            ) : order.status === "ordered" ? (
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
-                onClick={() => handleDeliverOrder(order)}
-              >
-                Deliver Order
-              </button>
-            ) : (
-              <p
-                className={
-                  order.status === "delivered"
-                    ? "text-green-600"
-                    : "text-red-600"
-                }
-              >
-                <strong>
-                  {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                </strong>
+        {loadingOrders ? (
+          <LoadingSpinner size="lg" loadingMsg="Please wait. Loading orders" />
+        ) : (
+          adminOrders.map((order) => (
+            <div
+              key={order.orderId}
+              className="bg-white shadow-md p-4 rounded-lg mb-4"
+            >
+              <p>
+                <strong>Order ID:</strong> {order.orderId}
               </p>
-            )}
-          </div>
-        ))}
+              <p>
+                <strong>User ID:</strong> {order.userId}
+              </p>
+              {orderUpdating === order.orderId ? (
+                <LoadingSpinner loadingMsg="Updating order" />
+              ) : order.status === "ordered" ? (
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+                  onClick={() => handleDeliverOrder(order)}
+                >
+                  Deliver Order
+                </button>
+              ) : (
+                <p
+                  className={
+                    order.status === "delivered"
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }
+                >
+                  <strong>
+                    {order.status.charAt(0).toUpperCase() +
+                      order.status.slice(1)}
+                  </strong>
+                </p>
+              )}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

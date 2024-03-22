@@ -5,7 +5,7 @@ import { updateProducts } from "../redux/products/products";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import servicePath from "@/config";
-import { AlertModal } from "../CommonComponents";
+import { AlertModal, LoadingSpinner } from "../CommonComponents";
 import { useRouter, usePathname } from "next/navigation";
 import { getCartItems } from "../commonFunctions/commonFunctions";
 
@@ -18,6 +18,8 @@ const ProductsPage = () => {
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [addingToCart, setAddingToCart] = useState("");
+
+  const [loadingProducts, setLoadingProducts] = useState(false);
 
   const products = useSelector((state) => state.products || []);
 
@@ -33,12 +35,16 @@ const ProductsPage = () => {
 
   const getProductDetails = async () => {
     try {
+      setLoadingProducts(true);
       const response = (await axios.post(servicePath + "/products", {}))?.data;
 
       if (response?.status === 200) {
         dispatch(updateProducts(response?.products || []));
       }
-    } catch (e) {}
+      setLoadingProducts(false);
+    } catch (e) {
+      setLoadingProducts(false);
+    }
   };
 
   const deleteProduct = async () => {
@@ -99,16 +105,23 @@ const ProductsPage = () => {
           loadingMsg="Please wait, Product delete in progress..."
         />
       )}
-      {products.map((product) => (
-        <ProductCard
-          key={product._id}
-          product={product}
-          onDelete={() => setDeleteDialog(product._id)}
-          onEdit={() => onEdit(product._id)}
-          addToCart={() => addToCart(product)}
-          addingToCart={addingToCart}
+      {loadingProducts ? (
+        <LoadingSpinner
+          size="lg"
+          loadingMsg="Please wait. Loading products..."
         />
-      ))}
+      ) : (
+        products.map((product) => (
+          <ProductCard
+            key={product._id}
+            product={product}
+            onDelete={() => setDeleteDialog(product._id)}
+            onEdit={() => onEdit(product._id)}
+            addToCart={() => addToCart(product)}
+            addingToCart={addingToCart}
+          />
+        ))
+      )}
     </div>
   );
 };

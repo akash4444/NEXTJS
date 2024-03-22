@@ -14,7 +14,7 @@ const ImageSection = ({ image, productName }) => {
           alt={productName}
           width={150}
           height={150}
-          priority="high"
+          loading="lazy"
           onError={(event) => {
             setImageExists(false);
           }}
@@ -28,8 +28,8 @@ const ImageSection = ({ image, productName }) => {
           <Image
             src={`/images/default.png`}
             alt={productName}
+            loading="lazy"
             width={loadingImage ? 10 : 150}
-            priority="high"
             height={loadingImage ? 10 : 150}
             onLoad={() => setLoadingImage(false)}
           />

@@ -55,7 +55,6 @@ const ProductForm = ({
 
   useEffect(() => {
     getProductNames();
-    console.log("====getProductNames");
   }, []);
 
   useEffect(() => {

@@ -23,13 +23,13 @@ const ProductsPage = () => {
 
   useEffect(() => {
     getProductDetails();
-  }, [currentPath]);
+  }, []);
 
   useEffect(() => {
     if (isLoggedIn) {
       getCartItems(dispatch, { userId: userId });
     }
-  }, [currentPath, userId]);
+  }, [userId]);
 
   const getProductDetails = async () => {
     try {

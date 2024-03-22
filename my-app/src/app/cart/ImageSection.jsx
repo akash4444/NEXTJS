@@ -14,6 +14,7 @@ const ImageSection = ({ image, productName }) => {
           alt={productName}
           width={150}
           height={150}
+          className="w-20 h-20 object-cover mr-4 rounded-lg"
           loading="lazy"
           onError={(event) => {
             setImageExists(false);
@@ -27,6 +28,7 @@ const ImageSection = ({ image, productName }) => {
             src={`/images/default.png`}
             alt={productName}
             width={loadingImage ? 10 : 150}
+            className="w-20 h-20 object-cover mr-4 rounded-lg"
             loading="lazy"
             height={loadingImage ? 10 : 150}
             onLoad={() => setLoadingImage(false)}

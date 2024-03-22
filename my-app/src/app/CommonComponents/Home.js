@@ -8,10 +8,10 @@ const Home = () => {
         style={{ backgroundImage: "url('/images/logo.png')" }}
       >
         <div className="container md:mx-auto px-4 py-8 text-center">
-          <h1 className="text-2xl md:text-5xl font-bold text-white">
+          <h1 className="text-2xl md:text-5xl font-bold text-black">
             Welcome to Fresh Fare Shop
           </h1>
-          <p className="text-xl mt-4 text-white">
+          <p className="text-xl mt-4 text-black">
             Discover the freshest fruits, vegetables, and many more from around
             the world.
           </p>

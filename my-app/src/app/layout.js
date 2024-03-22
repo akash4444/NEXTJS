@@ -19,14 +19,12 @@ export default function RootLayout({ children, ...rest }) {
 
   return (
     <html lang="en">
-      <body className="bg-gradient-to-r from-purple-500 to-pink-500">
+      <body className="bg-gray-100">
         <SessionProvider session={getServerSes()}>
           <Providers>
             <AuthGuard>
               <Navbar />
-              <div className="px-2 py-24 md:p-24 bg-gradient-to-r from-purple-500 to-pink-500">
-                {children}
-              </div>
+              <div className="px-2 py-24 md:p-24 bg-gray-100">{children}</div>
               <footer className="bg-gray-800 text-white fixed bottom-0 w-full z-999999">
                 <div className="container mx-auto px-4 py-3">
                   <p>

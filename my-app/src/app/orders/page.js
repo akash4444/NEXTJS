@@ -117,7 +117,7 @@ const MyOrdersPage = () => {
       ) : (
         orders.map((order) => (
           <div key={order._id}>
-            <div className="border rounded-md p-4 mb-4 md:w-100 lg:w-3/4 mx-auto bg-gray-100">
+            <div className="border rounded-md p-4 mb-4 md:w-100 lg:w-3/4 mx-auto bg-white">
               <div
                 className="flex justify-between items-center cursor-pointer"
                 onClick={() => toggleAccordion(order._id)}
@@ -189,6 +189,9 @@ const MyOrdersPage = () => {
                       <span className="mb-2 md:mb-0">${product.price}</span>
                       <span className="mb-2 md:mb-0">
                         Quantity: {product.quantity}
+                      </span>
+                      <span className="mb-2 md:mb-0 text-lg font-semibold">
+                        ${(product.quantity * product.price).toFixed(2)}
                       </span>
                     </div>
                   ))}

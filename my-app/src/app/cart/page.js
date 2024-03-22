@@ -89,131 +89,125 @@ const CartPage = () => {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      {orderedModal && (
-        <AlertModal
-          open={orderedModal}
-          yesbtn="Check your order"
-          nobtn=""
-          message={`Your order ${
-            orderedModal === "ordered" ? "placed" : "cancelled"
-          } successfully.`}
-          closeButton={() => setOrderedModal("")}
-          submitButton={() => navigateToOrderPage()}
-        />
-      )}
-      <h1 className="text-3xl font-semibold text-center mb-4">Your Cart</h1>
-      {placingOrder || clearingCart || loadingCart ? (
-        <LoadingSpinner
-          loadingMsg={
-            placingOrder
-              ? "Please wait. Placing your order..."
-              : clearingCart
-              ? "Please wait. Clearing your cart..."
-              : "Please wait. Loading cart..."
-          }
-          size="lg"
-        />
-      ) : items.length === 0 ? (
-        <div className="text-center">
-          <p className="text-gray-600 text-lg">
-            No items available in your cart.
-          </p>
-          {/* You can add additional content or actions for an empty cart */}
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="min-h-screen">
+      <div className="border rounded-md p-4 mb-4 md:w-100 lg:w-3/4 mx-auto bg-white">
+        {orderedModal && (
+          <AlertModal
+            open={orderedModal}
+            yesbtn="Check your order"
+            nobtn=""
+            message={`Your order ${
+              orderedModal === "ordered" ? "placed" : "cancelled"
+            } successfully.`}
+            closeButton={() => setOrderedModal("")}
+            submitButton={() => navigateToOrderPage()}
+          />
+        )}
+
+        <h1 className="text-3xl font-semibold text-center mb-4">
+          Shopping Cart
+        </h1>
+        {placingOrder || clearingCart || loadingCart ? (
+          <LoadingSpinner
+            loadingMsg={
+              placingOrder
+                ? "Please wait. Placing your order..."
+                : clearingCart
+                ? "Please wait. Clearing your cart..."
+                : "Please wait. Loading cart..."
+            }
+            size="lg"
+          />
+        ) : items.length === 0 ? (
+          <div className="text-center">
+            <p className="text-gray-600 text-lg">
+              No items available in your cart.
+            </p>
+            {/* You can add additional content or actions for an empty cart */}
+          </div>
+        ) : (
+          <>
             {items.map((item) => (
               <div
-                key={item.productId}
-                className="bg-white shadow-md rounded-lg p-4 flex flex-col md:flex-row items-center"
+                key={item._id}
+                className="flex items-center border-b border-gray-200 py-4"
               >
                 <ImageSection
-                  productName={item.productName}
                   image={item.image}
+                  productName={item.productName}
                 />
-
-                <div className="flex-grow md:ml-4">
-                  <h2 className="text-lg font-semibold mb-2">
-                    {item.productName}
-                  </h2>
-                  <div className="flex items-center mb-2">
-                    <span className="text-gray-600 mr-4">
-                      Price: ${item.price.toFixed(2)}
-                    </span>
-                    <div className="flex items-center">
-                      <button
-                        className="text-gray-600 focus:outline-none border border-gray-300 px-3 py-1 rounded"
-                        onClick={() => decrementQuantity(item)}
-                      >
-                        -
-                      </button>
-                      <span className="mx-2">{item.quantity}</span>
-                      <button
-                        className="text-gray-600 focus:outline-none border border-gray-300 px-3 py-1 rounded"
-                        onClick={() => incrementQuantity(item)}
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex items-center">
+                <div className="flex-1">
+                  <h2 className="text-lg font-semibold">{item.productName}</h2>
+                  <p className="text-gray-600">Price: ${item.price}</p>
+                  <div className="flex items-center mt-2">
                     <button
-                      className="text-red-600 hover:text-red-800 focus:outline-none border border-red-600 hover:bg-red-600 text-black px-4 py-2 rounded-md mr-2"
-                      onClick={() => removeFromCart(item)}
+                      className="bg-gray-200 text-gray-700 px-2 py-1 rounded-l-md"
+                      onClick={() => decrementQuantity(item)}
                     >
-                      Remove
+                      -
                     </button>
-                    <div className="font-semibold text-xl">
-                      ${(item.price * item.quantity).toFixed(2)}
-                    </div>
+                    <span className="px-2">{item.quantity}</span>
+                    <button
+                      className="bg-gray-200 text-gray-700 px-2 py-1 rounded-r-md"
+                      onClick={() => incrementQuantity(item)}
+                    >
+                      +
+                    </button>
                   </div>
+                </div>
+                <div className="flex flex-col items-end">
+                  <p className="text-gray-600 mb-2">
+                    Total: ${(item.price * item.quantity).toFixed(2)}
+                  </p>
+                  <button
+                    className="text-red-500"
+                    onClick={() => removeFromCart(item)}
+                  >
+                    Remove
+                  </button>
                 </div>
               </div>
             ))}
-          </div>
-          <div className="mt-8">
-            <hr className="my-6" />
-            <div className="text-right">
-              <h2 className="text-lg font-semibold">
-                Total: ${totalBill.toFixed(2)}
-              </h2>
+
+            <div className="flex justify-between mt-2">
+              <span>Total Amount:</span>
+              <span className="font-semibold">${totalBill.toFixed(2)}</span>
             </div>
-          </div>
-          <div className="fixed bottom-12 left-0 w-full bg-white shadow-md px-4 py-3 flex justify-between">
-            {clearingCart ? (
-              <LoadingSpinner loadingMsg="Please wait. Clearing your cart..." />
-            ) : (
-              <div className="max-h-6">
-                <button
-                  className="text-red-600 hover:text-red-800 focus:outline-none border border-red-600 hover:bg-red-600 text-black px-4 py-2 rounded-md"
-                  onClick={() => clearYourCart()}
-                  disabled={placingOrder}
-                >
-                  Clear Cart
-                </button>
-              </div>
-            )}
-            <div className="flex justify-between items-center gap-6">
-              <p className="text-lg font-semibold">
-                Total: ${totalBill.toFixed(2)}
-              </p>
-              {placingOrder ? (
-                <LoadingSpinner loadingMsg="Please wait. Placing your order..." />
+
+            <div className="fixed bottom-12 left-0 w-full bg-white shadow-md px-4 py-3 flex justify-between">
+              {clearingCart ? (
+                <LoadingSpinner loadingMsg="Please wait. Clearing your cart..." />
               ) : (
-                <button
-                  onClick={() => placeYourOrder()}
-                  disabled={clearingCart}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded ml-4"
-                >
-                  Place Order
-                </button>
+                <div className="max-h-6">
+                  <button
+                    className="text-red-600 hover:text-red-800 focus:outline-none border border-red-600 hover:bg-red-600 text-black px-4 py-2 rounded-md"
+                    onClick={() => clearYourCart()}
+                    disabled={placingOrder}
+                  >
+                    Clear Cart
+                  </button>
+                </div>
               )}
+              <div className="flex justify-between items-center gap-6">
+                <p className="text-lg font-semibold">
+                  Total: ${totalBill.toFixed(2)}
+                </p>
+                {placingOrder ? (
+                  <LoadingSpinner loadingMsg="Please wait. Placing your order..." />
+                ) : (
+                  <button
+                    onClick={() => placeYourOrder()}
+                    disabled={clearingCart}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded ml-4"
+                  >
+                    Place Order
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

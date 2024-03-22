@@ -204,15 +204,15 @@ const MyOrdersPage = () => {
                         loadingMsg="Please wait. Downloading your order invoice..."
                         size="sm"
                       />
+                    ) : order.status === "delivered" ? (
+                      <button
+                        onClick={() => handleDownloadInvoice(order)}
+                        className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                      >
+                        Download Invoice
+                      </button>
                     ) : (
-                      order.status === "delivered" && (
-                        <button
-                          onClick={() => handleDownloadInvoice(order)}
-                          className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                        >
-                          Download Invoice
-                        </button>
-                      )
+                      <div></div>
                     )}
                     {orderCancelling === order._id ? (
                       <LoadingSpinner

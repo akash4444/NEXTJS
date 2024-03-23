@@ -12,6 +12,17 @@ import {
   clearCartItems,
 } from "../commonFunctions/commonFunctions";
 import { LoadingSpinner, AlertModal } from "../CommonComponents";
+import CartStep from "./CartStep";
+import Step2 from "./AddressStep";
+import Step3 from "./PlaceOrderStep";
+import StepBar from "./StepBar";
+
+const steps = [
+  { number: 1, label: "Cart" },
+  { number: 2, label: "Address" },
+  { number: 3, label: "Place Order" },
+  { number: 4, label: "Finish" },
+];
 
 const CartPage = () => {
   const dispatch = useDispatch();
@@ -23,9 +34,20 @@ const CartPage = () => {
 
   const [placingOrder, setPlacingOrder] = useState(false);
   const [clearingCart, setClearingCart] = useState(false);
+  const [clearCartModal, setClearCartModal] = useState(false);
   const [orderedModal, setOrderedModal] = useState(false);
 
   const [loadingCart, setLoadingCart] = useState(false);
+
+  const [currentStep, setCurrentStep] = useState(1);
+
+  const nextStep = () => {
+    setCurrentStep(currentStep + 1);
+  };
+
+  const prevStep = () => {
+    setCurrentStep(currentStep - 1);
+  };
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -44,13 +66,25 @@ const CartPage = () => {
     setPlacingOrder(true);
     const response = await updateOrder(dispatch, payload);
     if (response.status === 200) {
-      setOrderedModal(response.type);
+      nextStep();
     }
     setPlacingOrder(false);
   };
 
+  const bottomNextButton = async () => {
+    if (currentStep === 0) {
+      nextStep();
+    } else if (currentStep === 1) {
+      nextStep();
+    } else {
+      await placeYourOrder();
+    }
+  };
+  const nextStepAddress = async () => {};
+
   const clearYourCart = async () => {
     const payload = { userId: userId };
+    setClearCartModal(false);
     setClearingCart(true);
     const response = await clearCartItems(dispatch, payload);
     setClearingCart(false);
@@ -104,8 +138,19 @@ const CartPage = () => {
           />
         )}
 
+        {clearCartModal && (
+          <AlertModal
+            open={clearCartModal}
+            yesbtn="Yes, I'm sure"
+            nobtn="No, cancel"
+            message="Are you sure you want to clear cart ?"
+            closeButton={() => setClearCartModal(false)}
+            submitButton={() => clearYourCart()}
+          />
+        )}
+
         <h1 className="text-3xl font-semibold text-center mb-4">
-          Shopping Cart
+          {steps.find((st, index) => currentStep === index + 1).label}
         </h1>
         {placingOrder || clearingCart || loadingCart ? (
           <LoadingSpinner
@@ -118,93 +163,58 @@ const CartPage = () => {
             }
             size="lg"
           />
-        ) : items.length === 0 ? (
-          <div className="text-center">
-            <p className="text-gray-600 text-lg">
-              No items available in your cart.
-            </p>
-            {/* You can add additional content or actions for an empty cart */}
-          </div>
         ) : (
           <>
-            {items.map((item) => (
-              <div
-                key={item._id}
-                className="flex items-center border-b border-gray-200 py-4"
-              >
-                <ImageSection
-                  image={item.image}
-                  productName={item.productName}
-                />
-                <div className="flex-1">
-                  <h2 className="text-lg font-semibold">{item.productName}</h2>
-                  <p className="text-gray-600">Price: ${item.price}</p>
-                  <div className="flex items-center mt-2">
-                    <button
-                      className="bg-gray-200 text-gray-700 px-2 py-1 rounded-l-md"
-                      onClick={() => decrementQuantity(item)}
-                    >
-                      -
-                    </button>
-                    <span className="px-2">{item.quantity}</span>
-                    <button
-                      className="bg-gray-200 text-gray-700 px-2 py-1 rounded-r-md"
-                      onClick={() => incrementQuantity(item)}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-                <div className="flex flex-col items-end">
-                  <p className="text-gray-600 mb-2">
-                    Total: ${(item.price * item.quantity).toFixed(2)}
-                  </p>
-                  <button
-                    className="text-red-500"
-                    onClick={() => removeFromCart(item)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              </div>
-            ))}
+            <StepBar
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              steps={steps}
+            />
+            {currentStep === 1 && (
+              <CartStep items={items} currentStep={currentStep} />
+            )}
 
-            <div className="flex justify-between mt-2">
-              <span>Total Amount:</span>
-              <span className="font-semibold">${totalBill.toFixed(2)}</span>
-            </div>
+            {currentStep === 2 && (
+              <Step2 prevStep={prevStep} nextStep={nextStep} />
+            )}
+            {currentStep === 3 && <Step3 prevStep={prevStep} />}
 
-            <div className="fixed bottom-12 left-0 w-full bg-white shadow-md px-4 py-3 flex justify-between">
-              {clearingCart ? (
-                <LoadingSpinner loadingMsg="Please wait. Clearing your cart..." />
-              ) : (
+            {currentStep !== 4 && items.length !== 0 && (
+              <div className="fixed bottom-12 left-0 w-full bg-white shadow-md px-4 py-3 flex justify-between">
                 <div className="max-h-6">
-                  <button
-                    className="text-red-600 hover:text-red-800 focus:outline-none border border-red-600 hover:bg-red-600 text-black px-4 py-2 rounded-md"
-                    onClick={() => clearYourCart()}
-                    disabled={placingOrder}
-                  >
-                    Clear Cart
-                  </button>
+                  {currentStep > 1 ? (
+                    <button
+                      className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2"
+                      onClick={prevStep}
+                    >
+                      Back
+                    </button>
+                  ) : (
+                    <button
+                      className="text-red-600 hover:text-red-800 focus:outline-none border border-red-600 hover:bg-red-600 text-black px-4 py-2 rounded-md"
+                      onClick={() => setClearCartModal(true)}
+                      disabled={placingOrder}
+                    >
+                      Clear Cart
+                    </button>
+                  )}
                 </div>
-              )}
-              <div className="flex justify-between items-center gap-6">
-                <p className="text-lg font-semibold">
-                  Total: ${totalBill.toFixed(2)}
-                </p>
-                {placingOrder ? (
-                  <LoadingSpinner loadingMsg="Please wait. Placing your order..." />
-                ) : (
+
+                <div className="flex justify-between items-center gap-6">
+                  <p className="text-lg font-semibold">
+                    Total: ${totalBill.toFixed(2)}
+                  </p>
+
                   <button
-                    onClick={() => placeYourOrder()}
+                    onClick={() => bottomNextButton()}
                     disabled={clearingCart}
                     className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded ml-4"
                   >
-                    Place Order
+                    {currentStep === 3 ? "Place Order" : "Next"}
                   </button>
-                )}
+                </div>
               </div>
-            </div>
+            )}
           </>
         )}
       </div>

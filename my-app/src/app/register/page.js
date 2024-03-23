@@ -13,9 +13,13 @@ const RegisterSchema = Yup.object().shape({
   password: Yup.string()
     .min(6, "Must be at least 6 characters")
     .required("Required"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password"), null], "Passwords must match")
-    .required("Required"),
+  address: Yup.object().shape({
+    houseNo: Yup.string().required("Required"),
+    streetLine: Yup.string().required("Required"),
+    pinCode: Yup.number().min(6, "Must be 6 digit").required("Required"),
+    city: Yup.string().required("Required"),
+    state: Yup.string().required("Required"),
+  }),
 });
 
 const Register = () => {
@@ -25,7 +29,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (values) => {
-    const { confirmPassword, ...rest } = values;
+    const { ...rest } = values;
     try {
       setLoading(true);
       const saltRounds = 10;
@@ -44,8 +48,8 @@ const Register = () => {
     } catch (e) {
       const data = e?.response?.data;
       setMessage({
-        msg: data.message,
-        type: data.status === 200 ? "success" : "error",
+        msg: data?.message,
+        type: data?.status === 200 ? "success" : "error",
       });
       setLoading(false);
     }
@@ -54,93 +58,166 @@ const Register = () => {
   const navigateToLoginPage = () => {
     router.push("/login");
   };
+
   return (
-    <div className="flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full bg-white space-y-8 p-8 shadow-md rounded-lg border border-gray-300">
-        <div>
-          <h1 className="text-center text-3xl font-bold text-gray-900">
-            Register
-          </h1>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Already have an account?{" "}
-            <a
-              href="#"
-              onClick={() => navigateToLoginPage()}
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              Sign in
-            </a>
-          </p>
-        </div>
+    <div className="max-w-md mx-auto mt-10 px-4 sm:px-6 lg:px-8">
+      <div className="bg-white shadow-md rounded px-8 py-6">
+        <h2 className="text-3xl font-semibold text-center mb-4">Register</h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          Already have an account?{" "}
+          <a
+            href="#"
+            onClick={() => navigateToLoginPage()}
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+          >
+            Sign in
+          </a>
+        </p>
         <Formik
           initialValues={{
             email: "",
             password: "",
-            confirmPassword: "",
+            address: {
+              houseNo: "",
+              streetLine: "",
+              pinCode: "",
+              city: "",
+              state: "",
+            },
           }}
           validationSchema={RegisterSchema}
-          onSubmit={(values) => {
-            handleSubmit(values);
+          onSubmit={async (values) => {
+            await handleSubmit(values);
           }}
         >
-          {({ errors, touched, values }) => (
-            <Form className="mt-8 space-y-6">
-              <div className="rounded-md shadow-sm space-y-4">
+          {({}) => (
+            <Form>
+              <div className="mb-4">
+                <label htmlFor="email" className="block mb-1">
+                  Email
+                </label>
+                <Field
+                  type="email"
+                  id="email"
+                  name="email"
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="text-red-500"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="password" className="block mb-1">
+                  Password
+                </label>
+                <Field
+                  type="password"
+                  id="password"
+                  name="password"
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="text-red-500"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
+                  <label htmlFor="houseNo" className="block mb-1">
+                    House No
+                  </label>
                   <Field
-                    type="email"
-                    name="email"
-                    disabled={loading}
-                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    placeholder="Email address"
+                    type="text"
+                    id="houseNo"
+                    name="address.houseNo"
+                    className="w-full px-3 py-2 border rounded-md"
                   />
                   <ErrorMessage
-                    name="email"
+                    name="address.houseNo"
                     component="div"
-                    className="text-red-500 text-sm"
+                    className="text-red-500"
                   />
                 </div>
                 <div>
+                  <label htmlFor="streetLine" className="block mb-1">
+                    Street Line
+                  </label>
                   <Field
-                    type="password"
-                    name="password"
-                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    placeholder="Password"
-                    disabled={loading}
+                    type="text"
+                    id="streetLine"
+                    name="address.streetLine"
+                    className="w-full px-3 py-2 border rounded-md"
                   />
                   <ErrorMessage
-                    name="password"
+                    name="address.streetLine"
                     component="div"
-                    className="text-red-500 text-sm"
+                    className="text-red-500"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label htmlFor="pinCode" className="block mb-1">
+                    Pin Code
+                  </label>
+                  <Field
+                    type="number"
+                    id="pinCode"
+                    name="address.pinCode"
+                    className="w-full px-3 py-2 border rounded-md"
+                  />
+                  <ErrorMessage
+                    name="address.pinCode"
+                    component="div"
+                    className="text-red-500"
                   />
                 </div>
                 <div>
+                  <label htmlFor="city" className="block mb-1">
+                    City
+                  </label>
                   <Field
-                    type="password"
-                    name="confirmPassword"
-                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    placeholder="Confirm Password"
-                    disabled={loading}
+                    type="text"
+                    id="city"
+                    name="address.city"
+                    className="w-full px-3 py-2 border rounded-md"
                   />
                   <ErrorMessage
-                    name="confirmPassword"
+                    name="address.city"
                     component="div"
-                    className="text-red-500 text-sm"
+                    className="text-red-500"
                   />
                 </div>
               </div>
               <div>
-                {loading ? (
-                  <LoadingSpinner loadingMsg="Please wait, Register in progress..." />
-                ) : (
-                  <button
-                    type="submit"
-                    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Register
-                  </button>
-                )}
+                <label htmlFor="state" className="block mb-1">
+                  State
+                </label>
+                <Field
+                  type="text"
+                  id="state"
+                  name="address.state"
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+                <ErrorMessage
+                  name="address.state"
+                  component="div"
+                  className="text-red-500"
+                />
               </div>
+              {loading ? (
+                <LoadingSpinner loadingMsg="Please wait, Register in progress..." />
+              ) : (
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4 w-full"
+                >
+                  Register
+                </button>
+              )}
               <div>
                 {message.msg && (
                   <MessageAlert

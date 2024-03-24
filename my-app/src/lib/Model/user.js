@@ -2,6 +2,18 @@ import mongoose from "mongoose";
 
 const addressSchema = new mongoose.Schema(
   {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
+    mobileNumber: {
+      type: Number,
+      required: true,
+    },
     houseNo: {
       type: String,
       required: true,
@@ -34,6 +46,18 @@ const addressSchema = new mongoose.Schema(
 
 const userModel = new mongoose.Schema(
   {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
+    mobileNumber: {
+      type: Number,
+      required: true,
+    },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ["admin", "user"], default: "user" },

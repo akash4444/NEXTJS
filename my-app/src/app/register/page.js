@@ -9,17 +9,13 @@ import axios from "axios";
 import bcryptjs from "bcryptjs";
 
 const RegisterSchema = Yup.object().shape({
+  firstName: Yup.string().required("Required"),
+  lastName: Yup.string().required("Required"),
   email: Yup.string().email("Invalid email").required("Required"),
   password: Yup.string()
     .min(6, "Must be at least 6 characters")
     .required("Required"),
-  address: Yup.object().shape({
-    houseNo: Yup.string().required("Required"),
-    streetLine: Yup.string().required("Required"),
-    pinCode: Yup.number().min(6, "Must be 6 digit").required("Required"),
-    city: Yup.string().required("Required"),
-    state: Yup.string().required("Required"),
-  }),
+  mobileNumber: Yup.number().required("Required"),
 });
 
 const Register = () => {
@@ -59,6 +55,14 @@ const Register = () => {
     router.push("/login");
   };
 
+  const handleChange = (event, setFieldValue) => {
+    const inputValue = event.target.value;
+    // Check if the input value contains only digits
+    if (/^\d*$/.test(inputValue)) {
+      setFieldValue("mobileNumber", inputValue);
+    }
+  };
+
   return (
     <div className="max-w-md mx-auto mt-10 px-4 sm:px-6 lg:px-8">
       <div className="bg-white shadow-md rounded px-8 py-6">
@@ -77,21 +81,51 @@ const Register = () => {
           initialValues={{
             email: "",
             password: "",
-            address: {
-              houseNo: "",
-              streetLine: "",
-              pinCode: "",
-              city: "",
-              state: "",
-            },
+            firstName: "",
+            lastName: "",
+            mobileNumber: "",
           }}
           validationSchema={RegisterSchema}
           onSubmit={async (values) => {
             await handleSubmit(values);
           }}
         >
-          {({}) => (
+          {({ values, setFieldValue }) => (
             <Form>
+              <div className="grid  grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label htmlFor="firstName" className="block mb-1">
+                    First Name
+                  </label>
+                  <Field
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    className="w-full px-3 py-2 border rounded-md"
+                  />
+                  <ErrorMessage
+                    name="firstName"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="lastName" className="block mb-1">
+                    Last Name
+                  </label>
+                  <Field
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    className="w-full px-3 py-2 border rounded-md"
+                  />
+                  <ErrorMessage
+                    name="lastName"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+              </div>
               <div className="mb-4">
                 <label htmlFor="email" className="block mb-1">
                   Email
@@ -109,6 +143,26 @@ const Register = () => {
                 />
               </div>
               <div className="mb-4">
+                <label htmlFor="mobileNumber" className="block mb-1">
+                  Mobile No.
+                </label>
+                <Field
+                  type="tel"
+                  id="mobileNumber"
+                  maxLength={10}
+                  value={values.mobileNumber}
+                  onChange={(e) => handleChange(e, setFieldValue)}
+                  name="mobileNumber"
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+                <ErrorMessage
+                  name="mobileNumber"
+                  component="div"
+                  className="text-red-500"
+                />
+              </div>
+
+              <div className="mb-4">
                 <label htmlFor="password" className="block mb-1">
                   Password
                 </label>
@@ -124,90 +178,7 @@ const Register = () => {
                   className="text-red-500"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label htmlFor="houseNo" className="block mb-1">
-                    House No
-                  </label>
-                  <Field
-                    type="text"
-                    id="houseNo"
-                    name="address.houseNo"
-                    className="w-full px-3 py-2 border rounded-md"
-                  />
-                  <ErrorMessage
-                    name="address.houseNo"
-                    component="div"
-                    className="text-red-500"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="streetLine" className="block mb-1">
-                    Street Line
-                  </label>
-                  <Field
-                    type="text"
-                    id="streetLine"
-                    name="address.streetLine"
-                    className="w-full px-3 py-2 border rounded-md"
-                  />
-                  <ErrorMessage
-                    name="address.streetLine"
-                    component="div"
-                    className="text-red-500"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label htmlFor="pinCode" className="block mb-1">
-                    Pin Code
-                  </label>
-                  <Field
-                    type="number"
-                    id="pinCode"
-                    name="address.pinCode"
-                    className="w-full px-3 py-2 border rounded-md"
-                  />
-                  <ErrorMessage
-                    name="address.pinCode"
-                    component="div"
-                    className="text-red-500"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="city" className="block mb-1">
-                    City
-                  </label>
-                  <Field
-                    type="text"
-                    id="city"
-                    name="address.city"
-                    className="w-full px-3 py-2 border rounded-md"
-                  />
-                  <ErrorMessage
-                    name="address.city"
-                    component="div"
-                    className="text-red-500"
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="state" className="block mb-1">
-                  State
-                </label>
-                <Field
-                  type="text"
-                  id="state"
-                  name="address.state"
-                  className="w-full px-3 py-2 border rounded-md"
-                />
-                <ErrorMessage
-                  name="address.state"
-                  component="div"
-                  className="text-red-500"
-                />
-              </div>
+
               {loading ? (
                 <LoadingSpinner loadingMsg="Please wait, Register in progress..." />
               ) : (

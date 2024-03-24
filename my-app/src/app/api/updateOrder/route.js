@@ -12,16 +12,19 @@ export async function POST(request) {
   try {
     const order = await OrdersModel.findOne({ userId: userId });
 
+    let createdOrderId = "";
     if (type === "ordered") {
       if (!order) {
         const odr = await OrdersModel.create({
           userId: userId,
           orders: [{ items: items, status: type }],
         });
-        await odr.save();
+        const res = await odr.save();
+        createdOrderId = res.orders[res.orders.length - 1]._id;
       } else {
         order.orders.push({ items: items, status: type });
-        await order.save();
+        const res = await order.save();
+        createdOrderId = res.orders[res.orders.length - 1]._id;
       }
     } else if (type === "cancelled") {
       const fIndex = order.orders.findIndex(
@@ -53,6 +56,7 @@ export async function POST(request) {
         } successfully.`,
         status: 200,
         type,
+        orderedId: createdOrderId,
       },
       { status: 200 }
     );

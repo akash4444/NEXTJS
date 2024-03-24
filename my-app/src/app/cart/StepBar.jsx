@@ -5,11 +5,23 @@ const StepBar = ({ currentStep, setCurrentStep, steps }) => {
     setCurrentStep(step);
   };
 
+  const disableStep = (step, stepNo) => {
+    let disable = true;
+
+    if (currentStep === 3) {
+      return disable;
+    } else if (currentStep <= stepNo) {
+      return disable;
+    } else {
+      disable = false;
+    }
+    return disable;
+  };
   return (
-    <div className="flex items-center justify-between w-full mb-4">
+    <div key="step" className="flex items-center justify-between w-full mb-4">
       {steps.map((step, index) => (
-        <>
-          <div key={index} className="relative">
+        <React.Fragment key={step.label}>
+          <div className="relative">
             {index !== 0 && (
               <div
                 className={`absolute top-0 left-1/2 transform -translate-x-1/2 h-full border-t-2 border-${
@@ -23,6 +35,7 @@ const StepBar = ({ currentStep, setCurrentStep, steps }) => {
                   ? "bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg"
                   : "bg-white text-gray-600 border border-gray-300 shadow-md"
               }`}
+              disabled={disableStep(step, index + 1)}
               style={{ width: "3rem", height: "3rem" }}
               onClick={() => handleStepClick(index + 1)}
             >
@@ -58,7 +71,7 @@ const StepBar = ({ currentStep, setCurrentStep, steps }) => {
               }`}
             ></div>
           )}
-        </>
+        </React.Fragment>
       ))}
     </div>
   );

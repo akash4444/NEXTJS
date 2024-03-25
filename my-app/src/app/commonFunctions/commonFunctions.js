@@ -3,6 +3,7 @@ import servicePath from "@/config";
 import { updateCart } from "../redux/cart/cart";
 import { updateOrders } from "../redux/orders/orders";
 import { updateAdminOrders } from "../redux/adminOrders/adminOrders";
+import { updateAddress } from "../redux/address/address";
 
 export const getCartItems = async (dispatch, payload) => {
   try {
@@ -50,13 +51,14 @@ export const clearCartItems = async (dispatch, payload) => {
 
 export const updateOrder = async (dispatch, payload) => {
   try {
-    const { type, userId, items, orderId = "" } = payload;
+    const { type, userId, items, orderId = "", deliveryAddress } = payload;
     const response = (
       await axios.post(servicePath + "/updateOrder", {
         type,
         userId,
         items,
         orderId,
+        deliveryAddress,
       })
     )?.data;
 
@@ -108,6 +110,66 @@ export const updateAdminPlacedOrders = async (dispatch, payload) => {
 
     if (response?.status === 200) {
       await getAdminOrders(dispatch);
+      return response;
+    }
+  } catch (e) {}
+};
+
+export const getAddress = async (dispatch, payload) => {
+  const { userId } = payload;
+  try {
+    const response = (await axios.post(servicePath + "/address", { userId }))
+      ?.data;
+
+    if (response?.status === 200) {
+      dispatch(updateAddress(response?.address || []));
+    }
+  } catch (e) {}
+};
+
+export const addAddress = async (dispatch, payload) => {
+  const { userId } = payload;
+  try {
+    const response = (
+      await axios.post(servicePath + "/address/addAddress", {
+        ...payload,
+      })
+    )?.data;
+
+    if (response?.status === 200) {
+      await getAddress(dispatch, { userId });
+      return response;
+    }
+  } catch (e) {}
+};
+
+export const editAddress = async (dispatch, payload) => {
+  const { userId } = payload;
+  try {
+    const response = (
+      await axios.post(servicePath + "/address/editAddress", {
+        ...payload,
+      })
+    )?.data;
+
+    if (response?.status === 200) {
+      await getAddress(dispatch, { userId });
+      return response;
+    }
+  } catch (e) {}
+};
+
+export const deleteAddress = async (dispatch, payload) => {
+  const { userId } = payload;
+  try {
+    const response = (
+      await axios.post(servicePath + "/address/deleteAddress", {
+        ...payload,
+      })
+    )?.data;
+
+    if (response?.status === 200) {
+      await getAddress(dispatch, { userId });
       return response;
     }
   } catch (e) {}

@@ -7,7 +7,7 @@ const items = [
   { id: 3, name: "Item 3", price: 20 },
 ];
 
-const PlaceOrder = ({ items }) => {
+const PlaceOrder = ({ items, selectedAddress, prevStep }) => {
   // Calculate total price of items
   const totalPrice = items.reduce((acc, item) => acc + item.price, 0);
 
@@ -22,6 +22,19 @@ const PlaceOrder = ({ items }) => {
 
   return (
     <div className="bg-gray-100 flex flex-col justify-center items-center">
+      <div className="mb-4 flex justify-between items-center bg-white py-2 px-8 mb-0 mt-4 rounded-lg shadow-md w-full max-w-screen-md mx-auto">
+        <div className="">
+          <div className="flex justify-between mb-2">
+            <div className="flex">
+              <div>Deliver to:</div>
+              <p className="font-semibold mb-0">{` ${selectedAddress.firstName} ${selectedAddress.lastName}, ${selectedAddress.pinCode}`}</p>
+            </div>
+          </div>
+        </div>
+        <button onClick={prevStep} className="text-blue-600 hover:underline">
+          Change
+        </button>
+      </div>
       <div className="bg-white p-8 mt-4 rounded-lg shadow-md w-full max-w-screen-md mx-auto">
         {/* Items List */}
         <div className="mb-4">

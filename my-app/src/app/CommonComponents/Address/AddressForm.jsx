@@ -1,12 +1,18 @@
 import { useFormik } from "formik";
-import { TextField, MenuItem, Button } from "@mui/material";
+import { TextField, MenuItem, Button, IconButton } from "@mui/material";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import * as Yup from "yup";
 import axios from "axios";
 import servicePath from "@/config";
+import LoadingSpinner from "../LoadingSpinner";
 
-const AddressForm = ({ saveAddress = () => {} }) => {
+const AddressForm = ({
+  saveAddress = () => {},
+  type,
+  submittingAddress = false,
+  editData = {},
+}) => {
   const router = useRouter();
 
   const [pinCodeError, setPinCodeError] = useState(false);
@@ -26,14 +32,14 @@ const AddressForm = ({ saveAddress = () => {} }) => {
     setTouched,
   } = useFormik({
     initialValues: {
-      firstName: "",
-      lastName: "",
-      mobileNumber: "",
-      pinCode: "",
-      state: "",
-      address: "",
-      locality: "",
-      city: "",
+      firstName: editData.firstName || "",
+      lastName: editData.lastName || "",
+      mobileNumber: editData.mobileNumber || "",
+      pinCode: editData.pinCode || "",
+      state: editData.state || "",
+      address: editData.address || "",
+      locality: editData.locality || "",
+      city: editData.city || "",
     },
     validateOnChange: false,
     validationSchema: Yup.object({
@@ -53,7 +59,7 @@ const AddressForm = ({ saveAddress = () => {} }) => {
         return;
       }
 
-      await saveAddress(values);
+      saveAddress(values, type);
     },
   });
 
@@ -105,123 +111,136 @@ const AddressForm = ({ saveAddress = () => {} }) => {
   return (
     <div className="container mx-auto">
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <TextField
-            fullWidth
-            id="firstName"
-            name="firstName"
-            size="small"
-            label="First Name"
-            variant="outlined"
-            value={values.firstName}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.firstName && Boolean(errors.firstName)}
-            helperText={touched.firstName && errors.firstName}
+        {submittingAddress ? (
+          <LoadingSpinner
+            loadingMsg={`Please wait. ${
+              type === "Add" ? "Adding" : "Updating"
+            } address...`}
           />
-          <TextField
-            fullWidth
-            id="lastName"
-            name="lastName"
-            label="Last Name"
-            size="small"
-            variant="outlined"
-            value={values.lastName}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.lastName && Boolean(errors.lastName)}
-            helperText={touched.lastName && errors.lastName}
-          />
-          <TextField
-            fullWidth
-            id="mobileNumber"
-            name="mobileNumber"
-            label="Mobile Number"
-            size="small"
-            type="tel"
-            variant="outlined"
-            inputProps={{ maxLength: 10 }}
-            value={values.mobileNumber}
-            onChange={handleChangeMobileNumber}
-            onBlur={handleBlur}
-            error={touched.mobileNumber && Boolean(errors.mobileNumber)}
-            helperText={touched.mobileNumber && errors.mobileNumber}
-          />
-          <TextField
-            fullWidth
-            id="pinCode"
-            name="pinCode"
-            label="Pin Code"
-            size="small"
-            type="tel"
-            inputProps={{ maxLength: 6 }}
-            variant="outlined"
-            value={values.pinCode}
-            onChange={handleChangePinCode}
-            onBlur={handleBlur}
-            error={touched.pinCode && Boolean(errors.pinCode || pinCodeError)}
-            helperText={touched.pinCode && (errors.pinCode || pinCodeError)}
-          />
-          <TextField
-            fullWidth
-            id="state"
-            name="state"
-            label="State"
-            size="small"
-            variant="outlined"
-            disabled
-            value={values.state}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.state && Boolean(errors.state)}
-            helperText={touched.state && errors.state}
-          />
-          <TextField
-            fullWidth
-            id="address"
-            name="address"
-            label="Address(House No, Building, Street, Area)"
-            size="small"
-            variant="outlined"
-            value={values.address}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.address && Boolean(errors.address)}
-            helperText={touched.address && errors.address}
-          />
-          <TextField
-            fullWidth
-            id="locality"
-            name="locality"
-            label="Locality/Town"
-            size="small"
-            variant="outlined"
-            value={values.locality}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.locality && Boolean(errors.locality)}
-            helperText={touched.locality && errors.locality}
-          />
-          <TextField
-            fullWidth
-            id="city"
-            name="city"
-            label="City"
-            disabled
-            size="small"
-            variant="outlined"
-            value={values.city}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.city && Boolean(errors.city)}
-            helperText={touched.city && errors.city}
-          />
-        </div>
-        <div className="mt-4">
-          <Button variant="contained" color="primary" type="submit">
-            Save
-          </Button>
-        </div>
+        ) : (
+          <>
+            {" "}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <TextField
+                fullWidth
+                id="firstName"
+                name="firstName"
+                size="small"
+                label="First Name"
+                variant="outlined"
+                value={values.firstName}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.firstName && Boolean(errors.firstName)}
+                helperText={touched.firstName && errors.firstName}
+              />
+              <TextField
+                fullWidth
+                id="lastName"
+                name="lastName"
+                label="Last Name"
+                size="small"
+                variant="outlined"
+                value={values.lastName}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.lastName && Boolean(errors.lastName)}
+                helperText={touched.lastName && errors.lastName}
+              />
+              <TextField
+                fullWidth
+                id="mobileNumber"
+                name="mobileNumber"
+                label="Mobile Number"
+                size="small"
+                type="tel"
+                variant="outlined"
+                inputProps={{ maxLength: 10 }}
+                value={values.mobileNumber}
+                onChange={handleChangeMobileNumber}
+                onBlur={handleBlur}
+                error={touched.mobileNumber && Boolean(errors.mobileNumber)}
+                helperText={touched.mobileNumber && errors.mobileNumber}
+              />
+              <TextField
+                fullWidth
+                id="pinCode"
+                name="pinCode"
+                label="Pin Code"
+                size="small"
+                type="tel"
+                inputProps={{ maxLength: 6 }}
+                variant="outlined"
+                value={values.pinCode}
+                onChange={handleChangePinCode}
+                onBlur={handleBlur}
+                error={
+                  touched.pinCode && Boolean(errors.pinCode || pinCodeError)
+                }
+                helperText={touched.pinCode && (errors.pinCode || pinCodeError)}
+              />
+              <TextField
+                fullWidth
+                id="state"
+                name="state"
+                label="State"
+                size="small"
+                variant="outlined"
+                disabled
+                value={values.state}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.state && Boolean(errors.state)}
+                helperText={touched.state && errors.state}
+              />
+              <TextField
+                fullWidth
+                id="address"
+                name="address"
+                label="Address(House No, Building, Street, Area)"
+                size="small"
+                variant="outlined"
+                value={values.address}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.address && Boolean(errors.address)}
+                helperText={touched.address && errors.address}
+              />
+              <TextField
+                fullWidth
+                id="locality"
+                name="locality"
+                label="Locality/Town"
+                size="small"
+                variant="outlined"
+                value={values.locality}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.locality && Boolean(errors.locality)}
+                helperText={touched.locality && errors.locality}
+              />
+              <TextField
+                fullWidth
+                id="city"
+                name="city"
+                label="City"
+                disabled
+                size="small"
+                variant="outlined"
+                value={values.city}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.city && Boolean(errors.city)}
+                helperText={touched.city && errors.city}
+              />
+            </div>
+            <div className="mt-4">
+              <Button variant="contained" color="primary" type="submit">
+                Save
+              </Button>
+            </div>
+          </>
+        )}
       </form>
     </div>
   );

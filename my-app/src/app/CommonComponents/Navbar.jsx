@@ -9,6 +9,7 @@ import { resetProducts } from "../redux/products/products";
 import { resetCart } from "../redux/cart/cart";
 import { resetOrders } from "../redux/orders/orders";
 import { resetAdminOrders } from "../redux/adminOrders/adminOrders";
+import { resetAddress } from "../redux/address/address";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import CartIcon from "./CartIcon";
@@ -42,6 +43,7 @@ const Navbar = () => {
     dispatch(resetCart());
     dispatch(resetOrders());
     dispatch(resetAdminOrders());
+    dispatch(resetAddress());
   };
 
   return (

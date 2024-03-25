@@ -4,6 +4,7 @@ const orderSchema = new mongoose.Schema(
   {
     status: { type: String, required: true, default: "ordered" },
     items: { type: Array, default: [] },
+    deliveryAddress: { type: Object, required: true, default: {} },
   },
   {
     timestamps: true,

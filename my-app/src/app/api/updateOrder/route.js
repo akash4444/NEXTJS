@@ -7,7 +7,7 @@ DBConnect();
 export async function POST(request) {
   const payload = await request.json();
 
-  const { userId, items = [], type, orderId } = payload;
+  const { userId, items = [], type, orderId, deliveryAddress } = payload;
 
   try {
     const order = await OrdersModel.findOne({ userId: userId });
@@ -17,12 +17,18 @@ export async function POST(request) {
       if (!order) {
         const odr = await OrdersModel.create({
           userId: userId,
-          orders: [{ items: items, status: type }],
+          orders: [
+            { items: items, status: type, deliveryAddress: deliveryAddress },
+          ],
         });
         const res = await odr.save();
         createdOrderId = res.orders[res.orders.length - 1]._id;
       } else {
-        order.orders.push({ items: items, status: type });
+        order.orders.push({
+          items: items,
+          status: type,
+          deliveryAddress: deliveryAddress,
+        });
         const res = await order.save();
         createdOrderId = res.orders[res.orders.length - 1]._id;
       }

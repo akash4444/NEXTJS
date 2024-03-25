@@ -10,6 +10,7 @@ import {
   getCartItems,
   updateOrder,
   clearCartItems,
+  getAddress,
 } from "../commonFunctions/commonFunctions";
 import { LoadingSpinner, AlertModal } from "../CommonComponents";
 import CartStep from "./CartStep";
@@ -37,6 +38,7 @@ const CartPage = () => {
   const [clearingCart, setClearingCart] = useState(false);
   const [clearCartModal, setClearCartModal] = useState(false);
   const [orderedModal, setOrderedModal] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState({});
 
   const [createdOrderedId, setCreatedOrderedId] = useState("");
 
@@ -74,6 +76,7 @@ const CartPage = () => {
   useEffect(() => {
     if (isLoggedIn) {
       fetchCartItems();
+      getAddress(dispatch, { userId: userId });
     }
   }, [userId]);
 
@@ -84,7 +87,12 @@ const CartPage = () => {
   };
 
   const placeYourOrder = async () => {
-    const payload = { items: items, userId: userId, type: "ordered" };
+    const payload = {
+      items: items,
+      userId: userId,
+      type: "ordered",
+      deliveryAddress: selectedAddress,
+    };
     setPlacingOrder(true);
     const response = await updateOrder(dispatch, payload);
     if (response.status === 200) {
@@ -198,10 +206,19 @@ const CartPage = () => {
             />
 
             {currentStep === 1 && (
-              <AddressStep prevStep={prevStep} nextStep={nextStep} />
+              <AddressStep
+                prevStep={prevStep}
+                nextStep={nextStep}
+                selectedAddress={selectedAddress}
+                setSelectedAddress={setSelectedAddress}
+              />
             )}
             {currentStep === 2 && (
-              <PlaceOrderStep prevStep={prevStep} items={items} />
+              <PlaceOrderStep
+                prevStep={prevStep}
+                items={items}
+                selectedAddress={selectedAddress}
+              />
             )}
             {currentStep === 3 && (
               <OrderCompletedStep
@@ -243,8 +260,20 @@ const CartPage = () => {
 
                 <button
                   onClick={() => bottomNextButton()}
-                  disabled={clearingCart}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded ml-4"
+                  disabled={
+                    clearingCart ||
+                    (currentStep === 1 &&
+                      section === "steps" &&
+                      !selectedAddress._id)
+                  }
+                  className={`px-4 py-2 rounded ml-4 ${
+                    clearingCart ||
+                    (currentStep === 1 &&
+                      section === "steps" &&
+                      !selectedAddress._id)
+                      ? "bg-gray-400 cursor-not-allowed opacity-50"
+                      : "bg-blue-500 hover:bg-blue-600 text-white"
+                  }`}
                 >
                   {currentStep === 2 ? "Place Order" : "Next"}
                 </button>

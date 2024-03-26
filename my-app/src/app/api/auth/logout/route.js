@@ -4,10 +4,11 @@ import { DBConnect } from "../../dbconnect";
 import bcryptjs from "bcryptjs";
 import { verify } from "jsonwebtoken";
 import { serialize } from "cookie";
+import { verifyTokenMiddleware } from "../../ApiCommonUtil/index";
 
 DBConnect();
 
-export async function GET(request) {
+const apiHandler = async (request) => {
   try {
     const cookieToken = serialize("token", "", {
       httpOnly: true,
@@ -34,4 +35,11 @@ export async function GET(request) {
       { status: 500 }
     );
   }
+};
+export async function GET(request) {
+  // Apply verifyTokenMiddleware to the productsHandler
+  // const verifiedHandler = verifyTokenMiddleware(apiHandler);
+
+  // Call the verified handler with the request
+  return apiHandler(request);
 }

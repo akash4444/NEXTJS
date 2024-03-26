@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import puppeteer from "puppeteer";
 import { OrdersModel } from "@/lib/Model/orders";
 import { DBConnect } from "../../dbconnect";
+import { verifyTokenMiddleware } from "../../ApiCommonUtil/index";
 
 // Establish database connection
 DBConnect();
 
 // Define the POST request handler
-export async function POST(request, res) {
+const apiHandler = async (request) => {
   const payload = await request.json();
 
   try {
@@ -65,8 +66,15 @@ export async function POST(request, res) {
       { status: 500 }
     );
   }
-}
+};
+// Export the handler function for POST method
+export async function POST(request, res) {
+  // Apply verifyTokenMiddleware to the productsHandler
+  const verifiedHandler = verifyTokenMiddleware(apiHandler);
 
+  // Call the verified handler with the request
+  return verifiedHandler(request, res);
+}
 function generateHTML(invoiceData) {
   const formatDate = (date) => {
     const day = String(date.getDate()).padStart(2, "0");

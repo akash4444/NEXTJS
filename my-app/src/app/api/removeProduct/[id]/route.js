@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { DBConnect } from "../../dbconnect";
 import { ProductsModel } from "@/lib/Model/products";
+import { verifyTokenMiddleware } from "../../ApiCommonUtil/index";
 
 DBConnect();
 
-export async function DELETE(request, content) {
+const apiHandler = async (request, content) => {
   const productId = content.params.id;
 
   try {
@@ -20,4 +21,12 @@ export async function DELETE(request, content) {
       { status: 500 }
     );
   }
+};
+
+export async function DELETE(request, content) {
+  // Apply verifyTokenMiddleware to the productsHandler
+  const verifiedHandler = verifyTokenMiddleware(apiHandler);
+
+  // Call the verified handler with the request
+  return verifiedHandler(request, content);
 }

@@ -32,7 +32,7 @@ const Register = () => {
       const saltRounds = 10;
       const staticSalt = bcryptjs.genSaltSync(saltRounds);
       const hashedPassword = await bcryptjs.hash(rest.password, staticSalt);
-      const response = await axiosInstance.post(servicePath + "/api/register", {
+      const response = await axios.post(servicePath + "/api/register", {
         ...rest,
         password: hashedPassword,
       });

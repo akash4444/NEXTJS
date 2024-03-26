@@ -4,9 +4,10 @@ import { NextResponse } from "next/server";
 import { DBConnect } from "../dbconnect";
 import { UserModel } from "@/lib/Model/user";
 import OTPGenerator from "otp-generator";
+import { verifyTokenMiddleware } from "../ApiCommonUtil/index";
 
 DBConnect();
-export async function POST(request) {
+const apiHandler = async (request) => {
   const payload = await request.json();
 
   try {
@@ -42,4 +43,12 @@ export async function POST(request) {
       { status: 500 }
     );
   }
+};
+// Export the handler function for POST method
+export async function POST(request) {
+  // Apply verifyTokenMiddleware to the productsHandler
+  // const verifiedHandler = verifyTokenMiddleware(apiHandler);
+
+  // Call the verified handler with the request
+  return apiHandler(request);
 }

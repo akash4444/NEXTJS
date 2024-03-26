@@ -4,6 +4,8 @@ const REGISTRATION_MESSAGES = {
   error: "",
 };
 
+const loggedOutApis = [""];
+
 export const loggedOutPages = [
   "/login",
   "/register",

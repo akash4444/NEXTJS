@@ -5,10 +5,11 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { serialize } from "cookie";
 import { secretJWTKey } from "@/config";
+import { verifyTokenMiddleware } from "../ApiCommonUtil/index";
 
 DBConnect();
 
-export async function POST(request) {
+const apiHandler = async (request) => {
   const payload = await request.json();
   const { email, password } = payload;
 
@@ -62,4 +63,12 @@ export async function POST(request) {
       { status: 500 }
     );
   }
+};
+// Export the handler function for POST method
+export async function POST(request) {
+  // Apply verifyTokenMiddleware to the productsHandler
+  // const verifiedHandler = verifyTokenMiddleware(apiHandler);
+
+  // Call the verified handler with the request
+  return apiHandler(request);
 }

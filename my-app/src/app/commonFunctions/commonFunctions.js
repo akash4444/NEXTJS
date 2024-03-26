@@ -24,8 +24,7 @@ export const clearStoreForLoggedOut = async (dispatch, payload) => {
 
 export const loggedOut = async (dispatch, payload) => {
   try {
-    const response = (await axiosInstance.get(servicePath + "/api/auth/logout"))
-      ?.data;
+    const response = (await axios.get(servicePath + "/api/auth/logout"))?.data;
 
     if (response?.status === 200) {
       clearStoreForLoggedOut(dispatch);

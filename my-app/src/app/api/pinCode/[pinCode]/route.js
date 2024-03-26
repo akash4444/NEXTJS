@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { OrdersModel } from "@/lib/Model/orders";
 
-export async function GET(request) {
+const apiHandler = async (request, content) => {
   const pinCode = content.params.pincode;
   try {
     const response = await fetch(
@@ -18,4 +18,11 @@ export async function GET(request) {
       { status: 500 }
     );
   }
+};
+export async function GET(request, content) {
+  // Apply verifyTokenMiddleware to the productsHandler
+  const verifiedHandler = verifyTokenMiddleware(apiHandler);
+
+  // Call the verified handler with the request
+  return verifiedHandler(request, content);
 }

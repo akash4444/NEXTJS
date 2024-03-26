@@ -3,15 +3,8 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import AlertModal from "./AlertModal";
-import { resetAuth } from "../redux/auth/authSlice";
-import { resetProductNames } from "../redux/products/productNames";
-import { resetProducts } from "../redux/products/products";
-import { resetCart } from "../redux/cart/cart";
-import { resetOrders } from "../redux/orders/orders";
-import { resetAdminOrders } from "../redux/adminOrders/adminOrders";
-import { resetAddress } from "../redux/address/address";
+import { loggedOut } from "../commonFunctions/commonFunctions";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
 import CartIcon from "./CartIcon";
 
 const Navbar = () => {
@@ -33,17 +26,10 @@ const Navbar = () => {
 
   const logoutProcess = async () => {
     setLoading(true);
-    await signOut({ redirect: false });
+    await loggedOut(dispatch, {});
     setLogoutModal(false);
     setLoading(false);
     router.push("/login");
-    dispatch(resetAuth());
-    dispatch(resetProductNames());
-    dispatch(resetProducts());
-    dispatch(resetCart());
-    dispatch(resetOrders());
-    dispatch(resetAdminOrders());
-    dispatch(resetAddress());
   };
 
   return (

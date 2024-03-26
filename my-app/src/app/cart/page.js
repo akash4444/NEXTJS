@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateCart } from "../redux/cart/cart";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
 import ImageSection from "./ImageSection";
 import {
   updateCartItems,

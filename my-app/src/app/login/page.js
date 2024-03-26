@@ -1,18 +1,26 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
 import { MessageAlert, LoadingSpinner } from "../CommonComponents";
-import { updateAuth } from "../redux/auth/authSlice";
+import { updateAuth, resetAuth } from "../redux/auth/authSlice";
 import { useSelector, useDispatch } from "react-redux";
-import { signIn } from "next-auth/react";
+import servicePath from "@/config";
+import axios from "axios";
+import bcryptjs from "bcryptjs";
+import { clearStoreForLoggedOut } from "../commonFunctions/commonFunctions";
+import axiosInstance from "../commonFunctions/axiosCommon";
 
 const Login = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [message, setMessage] = useState({});
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    clearStoreForLoggedOut(dispatch);
+  }, []);
 
   const navigateToRegisterPage = () => {
     router.push("/register");
@@ -26,11 +34,12 @@ const Login = () => {
     const { email, password } = values;
     setLoading(true);
     try {
-      const response = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
+      const response = (
+        await axiosInstance.post(servicePath + "/api/auth", {
+          email,
+          password: password,
+        })
+      )?.data;
 
       const data = response;
 
@@ -39,6 +48,7 @@ const Login = () => {
           updateAuth({
             userId: email,
             isLoggedIn: true,
+            role: data.role,
           })
         );
         router.push("/products");

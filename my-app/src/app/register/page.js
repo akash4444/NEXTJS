@@ -7,6 +7,7 @@ import servicePath from "@/config";
 import { MessageAlert, LoadingSpinner } from "../CommonComponents";
 import axios from "axios";
 import bcryptjs from "bcryptjs";
+import axiosInstance from "../commonFunctions/axiosCommon";
 
 const RegisterSchema = Yup.object().shape({
   firstName: Yup.string().required("Required"),
@@ -31,7 +32,7 @@ const Register = () => {
       const saltRounds = 10;
       const staticSalt = bcryptjs.genSaltSync(saltRounds);
       const hashedPassword = await bcryptjs.hash(rest.password, staticSalt);
-      const response = await axios.post(servicePath + "/register", {
+      const response = await axiosInstance.post(servicePath + "/api/register", {
         ...rest,
         password: hashedPassword,
       });

@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { ProductsModel } from "@/lib/Model/products";
 import { DBConnect } from "../dbconnect";
+import { verifyTokenMiddleware } from "../ApiCommonUtil/index";
 
 DBConnect();
-export async function POST(request) {
+
+// Define your API handler function
+const productsHandler = async (request) => {
   const payload = await request.json();
   try {
     const products = await ProductsModel.find({});
@@ -18,4 +21,13 @@ export async function POST(request) {
       { status: 500 }
     );
   }
+};
+
+// Export the handler function for POST method
+export async function POST(request) {
+  // Apply verifyTokenMiddleware to the productsHandler
+  const verifiedHandler = verifyTokenMiddleware(productsHandler);
+
+  // Call the verified handler with the request
+  return verifiedHandler(request);
 }

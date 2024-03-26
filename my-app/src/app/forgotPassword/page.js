@@ -8,6 +8,7 @@ import servicePath from "@/config";
 import * as Yup from "yup";
 import { MessageAlert, LoadingSpinner } from "../CommonComponents";
 import bcryptjs from "bcryptjs";
+import axiosInstance from "../commonFunctions/axiosCommon";
 
 const ForgotPassword = () => {
   const router = useRouter();
@@ -54,7 +55,7 @@ const ForgotPassword = () => {
 
       setOtpSending(true);
       const response = (
-        await axios.post(servicePath + "/sendOtp", { email: email })
+        await axiosInstance.post(servicePath + "/api/sendOtp", { email: email })
       )?.data;
 
       if (response.status === 200) {
@@ -80,7 +81,10 @@ const ForgotPassword = () => {
       const { email, otp } = values;
       setOtpVerifying(true);
       const response = (
-        await axios.post(servicePath + "/validateOtp", { email, otp })
+        await axiosInstance.post(servicePath + "/api/validateOtp", {
+          email,
+          otp,
+        })
       )?.data;
 
       if (response.status === 200) {
@@ -107,7 +111,7 @@ const ForgotPassword = () => {
       const hashedPassword = await bcryptjs.hash(password, staticSalt);
 
       const response = (
-        await axios.post(servicePath + "/updatePassword", {
+        await axiosInstance.post(servicePath + "/api/updatePassword", {
           email,
           password: hashedPassword,
         })

@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import { loggedInPages, loggedOutPages } from "./constant";
-import { useSession, getSession } from "next-auth/react";
+import { cookies } from "next/headers";
 
 export async function middleware(request) {
-  const { value: session } =
-    request.cookies.get("next-auth.session-token") || {};
+  const cookieStore = cookies();
+  const cookie = cookieStore.get("token") || {};
+  const token = cookie.value || "";
+
+  let session = token;
   const path = request.nextUrl.pathname;
 
   if (path === "/") {

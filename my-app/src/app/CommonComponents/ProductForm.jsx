@@ -10,6 +10,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import LoadingSpinner from "./LoadingSpinner";
 import { useRouter, usePathname } from "next/navigation";
+import axiosInstance from "../commonFunctions/axiosCommon";
 
 const ProductForm = ({
   initialValues,
@@ -84,8 +85,9 @@ const ProductForm = ({
 
   const getProductNames = async () => {
     try {
-      const response = (await axios.post(servicePath + "/productNames", {}))
-        ?.data;
+      const response = (
+        await axiosInstance.post(servicePath + "/api/productNames", {})
+      )?.data;
 
       if (response.status === 200) {
         dispatch(updateProductNames(response.productNames));

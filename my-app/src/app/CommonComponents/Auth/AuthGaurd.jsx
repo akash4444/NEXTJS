@@ -2,9 +2,12 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
-import { useSession, getSession } from "next-auth/react";
 import { resetAuth, updateAuth } from "../../redux/auth/authSlice";
 import { adminInPages } from "@/constant";
+import axios from "axios";
+import servicePath from "@/config";
+import { loggedOut } from "@/app/commonFunctions/commonFunctions";
+import axiosInstance from "../../commonFunctions/axiosCommon";
 
 export default function AuthGuard({ children }) {
   const router = useRouter();
@@ -14,34 +17,25 @@ export default function AuthGuard({ children }) {
   const [loading, setLoading] = useState(true);
   const isAdmin = role === "admin";
 
-  const session = useSession();
-
   useEffect(() => {
-    if (session.status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [session.status]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const session = await getSession();
-      if (!session) {
-        dispatch(resetAuth());
+    const checkToken = async () => {
+      try {
+        const response = await axios.get(servicePath + "/api/auth/check-auth");
+        if (response.status !== 200) {
+          await loggedOut(dispatch);
+          router.push("/login");
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error checking authentication:", error);
+        setLoading(false);
+        await loggedOut(dispatch);
+        router.push("/login");
       }
-      console.log("session", session);
-      dispatch(updateAuth({ role: session?.user?.role }));
-      setLoading(false);
     };
-    if (
-      !isAdmin &&
-      (adminInPages.includes(currentPath) ||
-        currentPath.startsWith("/editProduct/"))
-    ) {
-      router.push("/products");
-    }
-    fetchData();
-  }, [currentPath]);
+
+    checkToken();
+  }, []);
 
   if (loading) {
     return (

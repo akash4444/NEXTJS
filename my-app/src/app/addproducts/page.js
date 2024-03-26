@@ -4,6 +4,7 @@ import { ProductForm } from "../CommonComponents";
 import axios from "axios";
 import servicePath from "@/config";
 import { MessageAlert } from "../CommonComponents";
+import axiosInstance from "../commonFunctions/axiosCommon";
 
 const AddProductForm = () => {
   const [submitting, setSubmitting] = useState(false);
@@ -27,7 +28,9 @@ const AddProductForm = () => {
       setSubmitting(true);
 
       const data = (
-        await axios.post(servicePath + "/saveProduct", { ...payload })
+        await axiosInstance.post(servicePath + "/api/saveProduct", {
+          ...payload,
+        })
       )?.data;
 
       setMessage({

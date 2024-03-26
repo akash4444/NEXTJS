@@ -1,6 +1,5 @@
 // pages/api/sendOTP.js
 
-import nodemailer from "nodemailer";
 import { NextResponse } from "next/server";
 import { DBConnect } from "../dbconnect";
 import { UserModel } from "@/lib/Model/user";

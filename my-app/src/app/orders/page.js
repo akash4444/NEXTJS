@@ -15,6 +15,7 @@ import { getOrders, updateOrder } from "../commonFunctions/commonFunctions";
 import { LoadingSpinner, AlertModal } from "../CommonComponents";
 import servicePath from "@/config";
 import axios from "axios";
+import axiosInstance from "../commonFunctions/axiosCommon";
 
 const MyOrdersPage = () => {
   const dispatch = useDispatch();
@@ -64,8 +65,8 @@ const MyOrdersPage = () => {
     const payload = { orderId: order._id, userId };
     setOrderDownloading(order._id);
     try {
-      const response = await axios.post(
-        servicePath + `/orders/invoice`,
+      const response = await axiosInstance.post(
+        servicePath + `/api/orders/invoice`,
         payload,
         {
           responseType: "blob",

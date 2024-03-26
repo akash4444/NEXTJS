@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import servicePath from "@/config";
 import LoadingSpinner from "../LoadingSpinner";
+import axiosInstance from "../../commonFunctions/axiosCommon";
 
 const AddressForm = ({
   saveAddress = () => {},
@@ -74,7 +75,9 @@ const AddressForm = ({
   const fetchPicodes = async (pinCode) => {
     try {
       const response = (
-        await axios.get(servicePath + `/pinCode/${pinCode.toString()}`)
+        await axiosInstance.get(
+          servicePath + `/api/pinCode/${pinCode.toString()}`
+        )
       )?.data;
 
       if (response.Status === "Success") {

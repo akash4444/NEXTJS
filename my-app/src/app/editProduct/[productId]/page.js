@@ -5,6 +5,7 @@ import { ProductForm } from "../../CommonComponents";
 import axios from "axios";
 import servicePath from "@/config";
 import { MessageAlert, LoadingSpinner } from "../../CommonComponents";
+import axiosInstance from "../../commonFunctions/axiosCommon";
 
 const EditProductForm = ({ params }) => {
   const router = useRouter();
@@ -37,8 +38,9 @@ const EditProductForm = ({ params }) => {
     try {
       setLoadingPrd(true);
 
-      const data = (await axios.get(servicePath + "/product" + `/${productId}`))
-        ?.data;
+      const data = (
+        await axiosInstance.get(servicePath + "/api/product" + `/${productId}`)
+      )?.data;
 
       if (data.status === 200) {
         const { productName, price, description, category } = data.product;
@@ -65,9 +67,12 @@ const EditProductForm = ({ params }) => {
       setSubmitting(true);
 
       const data = (
-        await axios.put(servicePath + "/editProduct" + `/${productId}`, {
-          ...payload,
-        })
+        await axiosInstance.put(
+          servicePath + "/api/editProduct" + `/${productId}`,
+          {
+            ...payload,
+          }
+        )
       )?.data;
 
       setMessage({

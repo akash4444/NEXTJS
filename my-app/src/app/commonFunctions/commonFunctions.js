@@ -1,14 +1,44 @@
 import axios from "axios";
 import servicePath from "@/config";
-import { updateCart } from "../redux/cart/cart";
-import { updateOrders } from "../redux/orders/orders";
-import { updateAdminOrders } from "../redux/adminOrders/adminOrders";
-import { updateAddress } from "../redux/address/address";
+import { updateCart, resetCart } from "../redux/cart/cart";
+import { updateOrders, resetOrders } from "../redux/orders/orders";
+import {
+  updateAdminOrders,
+  resetAdminOrders,
+} from "../redux/adminOrders/adminOrders";
+import { updateAddress, resetAddress } from "../redux/address/address";
+import { resetAuth } from "../redux/auth/authSlice";
+import { resetProductNames } from "../redux/products/productNames";
+import { resetProducts } from "../redux/products/products";
+import axiosInstance from "./axiosCommon";
+
+export const clearStoreForLoggedOut = async (dispatch, payload) => {
+  dispatch(resetAuth());
+  dispatch(resetProductNames());
+  dispatch(resetProducts());
+  dispatch(resetCart());
+  dispatch(resetOrders());
+  dispatch(resetAdminOrders());
+  dispatch(resetAddress());
+};
+
+export const loggedOut = async (dispatch, payload) => {
+  try {
+    const response = (await axiosInstance.get(servicePath + "/api/auth/logout"))
+      ?.data;
+
+    if (response?.status === 200) {
+      clearStoreForLoggedOut(dispatch);
+    }
+  } catch (e) {}
+};
 
 export const getCartItems = async (dispatch, payload) => {
   try {
     const response = (
-      await axios.post(servicePath + "/cartItems", { userId: payload.userId })
+      await axiosInstance.post(servicePath + "/api/cartItems", {
+        userId: payload.userId,
+      })
     )?.data;
 
     if (response?.status === 200) {
@@ -21,7 +51,7 @@ export const updateCartItems = async (dispatch, payload) => {
   try {
     const { type, userId, productId } = payload;
     const response = (
-      await axios.post(servicePath + "/updateCartItems", {
+      await axiosInstance.post(servicePath + "/api/updateCartItems", {
         type,
         userId,
         productId,
@@ -38,7 +68,7 @@ export const clearCartItems = async (dispatch, payload) => {
   try {
     const { userId } = payload;
     const response = (
-      await axios.post(servicePath + "/clearCart", {
+      await axiosInstance.post(servicePath + "/api/clearCart", {
         userId,
       })
     )?.data;
@@ -53,7 +83,7 @@ export const updateOrder = async (dispatch, payload) => {
   try {
     const { type, userId, items, orderId = "", deliveryAddress } = payload;
     const response = (
-      await axios.post(servicePath + "/updateOrder", {
+      await axiosInstance.post(servicePath + "/api/updateOrder", {
         type,
         userId,
         items,
@@ -78,7 +108,9 @@ export const updateOrder = async (dispatch, payload) => {
 export const getOrders = async (dispatch, payload) => {
   try {
     const response = (
-      await axios.post(servicePath + "/orders", { userId: payload.userId })
+      await axiosInstance.post(servicePath + "/api/orders", {
+        userId: payload.userId,
+      })
     )?.data;
 
     if (response?.status === 200) {
@@ -89,7 +121,9 @@ export const getOrders = async (dispatch, payload) => {
 
 export const getAdminOrders = async (dispatch, payload) => {
   try {
-    const response = (await axios.post(servicePath + "/adminOrders", {}))?.data;
+    const response = (
+      await axiosInstance.post(servicePath + "/api/adminOrders", {})
+    )?.data;
 
     if (response?.status === 200) {
       dispatch(updateAdminOrders(response?.adminOrderItems || []));
@@ -101,11 +135,14 @@ export const updateAdminPlacedOrders = async (dispatch, payload) => {
   const { type, userId, orderId = "" } = payload;
   try {
     const response = (
-      await axios.post(servicePath + "/adminOrders/updateAdminOrders", {
-        type,
-        userId,
-        orderId,
-      })
+      await axiosInstance.post(
+        servicePath + "/api/adminOrders/updateAdminOrders",
+        {
+          type,
+          userId,
+          orderId,
+        }
+      )
     )?.data;
 
     if (response?.status === 200) {
@@ -118,8 +155,9 @@ export const updateAdminPlacedOrders = async (dispatch, payload) => {
 export const getAddress = async (dispatch, payload) => {
   const { userId } = payload;
   try {
-    const response = (await axios.post(servicePath + "/address", { userId }))
-      ?.data;
+    const response = (
+      await axiosInstance.post(servicePath + "/api/address", { userId })
+    )?.data;
 
     if (response?.status === 200) {
       dispatch(updateAddress(response?.address || []));
@@ -131,7 +169,7 @@ export const addAddress = async (dispatch, payload) => {
   const { userId } = payload;
   try {
     const response = (
-      await axios.post(servicePath + "/address/addAddress", {
+      await axiosInstance.post(servicePath + "/api/address/addAddress", {
         ...payload,
       })
     )?.data;
@@ -147,7 +185,7 @@ export const editAddress = async (dispatch, payload) => {
   const { userId } = payload;
   try {
     const response = (
-      await axios.post(servicePath + "/address/editAddress", {
+      await axiosInstance.post(servicePath + "/api/address/editAddress", {
         ...payload,
       })
     )?.data;
@@ -163,7 +201,7 @@ export const deleteAddress = async (dispatch, payload) => {
   const { userId } = payload;
   try {
     const response = (
-      await axios.post(servicePath + "/address/deleteAddress", {
+      await axiosInstance.post(servicePath + "/api/address/deleteAddress", {
         ...payload,
       })
     )?.data;

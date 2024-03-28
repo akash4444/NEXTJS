@@ -60,7 +60,7 @@ const AddressPage = ({
     editData = {},
   }) => {
     return (
-      <Modal open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <Modal open={open} onClose={handleClose} maxWidth="md" fullWidth="md">
         <div className="bg-white rounded-md p-4 overflow-y-auto max-h-full">
           <div className="flex justify-end">
             <IconButton

@@ -1,27 +1,19 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import moment from "moment";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Button,
-} from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import ImageSection from "./ImageSection";
 import { getOrders, updateOrder } from "../commonFunctions/commonFunctions";
-import { LoadingSpinner, AlertModal } from "../CommonComponents";
-import servicePath from "@/config";
-import axios from "axios";
-import axiosInstance from "../commonFunctions/axiosCommon";
+import { LoadingSpinner } from "../CommonComponents";
 import PDFGenerator from "../Invoice/Invoice";
 
 const MyOrdersPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { isLoggedIn, userId, role } = useSelector((state) => state.auth || {});
+  const { isLoggedIn, userId, role, userName } = useSelector(
+    (state) => state.auth || {}
+  );
   const { orders = [] } = useSelector((state) => state.orders || {});
 
   const [orderCancelling, setOrderCancelling] = useState("");
@@ -60,36 +52,6 @@ const MyOrdersPage = () => {
     const response = await updateOrder(dispatch, payload);
     response.showAlert && alert(response.message);
     setOrderCancelling("");
-  };
-
-  const handleDownloadInvoice = async (order) => {
-    const payload = { orderId: order._id, userId };
-    setOrderDownloading(order._id);
-    try {
-      const response = await axiosInstance.post(
-        servicePath + `/api/orders/invoice`,
-        payload,
-        {
-          responseType: "blob",
-        }
-      );
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute(
-        "download",
-        `invoice-${order._id}-${moment().format("YYYY-MM-DD_HH-mm-ss")}.pdf`
-      );
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      setOrderDownloading("");
-    } catch (error) {
-      console.error("Error downloading invoice:", error);
-      setOrderDownloading("");
-    }
   };
 
   const productSubtotals = (order) => {
@@ -181,7 +143,6 @@ const MyOrdersPage = () => {
                       key={product._id}
                       className="flex flex-col md:flex-row justify-between items-center border-b py-2"
                     >
-                      <PDFGenerator />
                       <div className="flex items-center mb-2 md:mb-0">
                         <ImageSection
                           image={product.image}
@@ -205,21 +166,13 @@ const MyOrdersPage = () => {
                     </span>
                   </div>
                   <div className="mt-4 flex justify-between">
-                    {orderDownloading === order._id ? (
-                      <LoadingSpinner
-                        loadingMsg="Please wait. Downloading your order invoice..."
-                        size="sm"
-                      />
-                    ) : order.status === "delivered" ? (
-                      <button
-                        onClick={() => handleDownloadInvoice(order)}
-                        className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                      >
-                        Download Invoice
-                      </button>
-                    ) : (
-                      <div></div>
-                    )}
+                    <PDFGenerator
+                      order={order}
+                      userId={userId}
+                      orderDownloading={orderDownloading}
+                      userName={userName}
+                      setOrderDownloading={setOrderDownloading}
+                    />
                     {orderCancelling === order._id ? (
                       <LoadingSpinner
                         loadingMsg="Please wait. Cancelling your order..."

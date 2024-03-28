@@ -8,17 +8,17 @@ import CloseIcon from "@mui/icons-material/Close";
 import { LoadingSpinner, AlertModal } from "../CommonComponents";
 
 const PDFGenerator = ({
-  order,
-  userId,
-  userName,
-  orderDownloading,
-  setOrderDownloading,
+  order = {},
+  userId = "",
+  userName = "",
+  orderDownloading = "",
+  setOrderDownloading = () => {},
 }) => {
   const htmlRef = useRef(null);
-  const [openInvoice, setOpenInvoice] = useState();
+  const [openInvoice, setOpenInvoice] = useState(false);
 
   let invoiceData = {};
-  if (order.status === "delivered") {
+  if (order?.status === "delivered") {
     const productSubtotals = (order) => {
       return order.map((item) => item.price * item.quantity);
     };
@@ -125,7 +125,7 @@ const PDFGenerator = ({
 
   return (
     <div>
-      {orderDownloading === order._id ? (
+      {orderDownloading === order?._id ? (
         <LoadingSpinner
           loadingMsg="Please wait. Downloading your order invoice..."
           size="sm"

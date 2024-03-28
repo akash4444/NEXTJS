@@ -16,6 +16,7 @@ import { LoadingSpinner, AlertModal } from "../CommonComponents";
 import servicePath from "@/config";
 import axios from "axios";
 import axiosInstance from "../commonFunctions/axiosCommon";
+import PDFGenerator from "../Invoice/Invoice";
 
 const MyOrdersPage = () => {
   const dispatch = useDispatch();
@@ -180,6 +181,7 @@ const MyOrdersPage = () => {
                       key={product._id}
                       className="flex flex-col md:flex-row justify-between items-center border-b py-2"
                     >
+                      <PDFGenerator />
                       <div className="flex items-center mb-2 md:mb-0">
                         <ImageSection
                           image={product.image}

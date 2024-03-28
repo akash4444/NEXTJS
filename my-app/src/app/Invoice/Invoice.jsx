@@ -2,7 +2,7 @@
 import React, { useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import moment from "moment";
-import pdfMake from "pdfmake";
+// import pdfMake from "pdfmake";
 import { Modal, Button, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { LoadingSpinner, AlertModal } from "../CommonComponents";
@@ -46,66 +46,66 @@ const PDFGenerator = ({
     try {
       setOrderDownloading(order._id);
       const pdfdata = document.getElementById("pdf-creation");
-      html2canvas(pdfdata, { scrollY: -window.scrollY }).then(async function (
-        canvas
-      ) {
-        const imageParts = [];
-        const imageHeight = 2000;
-        const noOfPages = Math.ceil(canvas.height / imageHeight);
+      // html2canvas(pdfdata, { scrollY: -window.scrollY }).then(async function (
+      //   canvas
+      // ) {
+      //   const imageParts = [];
+      //   const imageHeight = 2000;
+      //   const noOfPages = Math.ceil(canvas.height / imageHeight);
 
-        for (let i = 0; i < noOfPages; i++) {
-          const canvasPart = document.createElement("canvas");
-          canvasPart.width = canvas.width;
-          canvasPart.height = imageHeight;
+      //   for (let i = 0; i < noOfPages; i++) {
+      //     const canvasPart = document.createElement("canvas");
+      //     canvasPart.width = canvas.width;
+      //     canvasPart.height = imageHeight;
 
-          const context = canvasPart.getContext("2d");
-          context.drawImage(
-            canvas,
-            0,
-            i * imageHeight,
-            canvas.width,
-            imageHeight,
-            0,
-            0,
-            canvas.width,
-            imageHeight
-          );
+      //     const context = canvasPart.getContext("2d");
+      //     context.drawImage(
+      //       canvas,
+      //       0,
+      //       i * imageHeight,
+      //       canvas.width,
+      //       imageHeight,
+      //       0,
+      //       0,
+      //       canvas.width,
+      //       imageHeight
+      //     );
 
-          const imageData = canvasPart.toDataURL();
-          imageParts.push({
-            image: imageData,
-            ...(i === noOfPages - 1 ? {} : { pageBreak: "after" }),
-          });
-        }
+      //     const imageData = canvasPart.toDataURL();
+      //     imageParts.push({
+      //       image: imageData,
+      //       ...(i === noOfPages - 1 ? {} : { pageBreak: "after" }),
+      //     });
+      //   }
 
-        const documentDefinition = {
-          permissions: {
-            printing: "highResolution", //'lowResolution'
-            modifying: false,
-            copying: false,
-            annotating: true,
-            fillingForms: true,
-            contentAccessibility: true,
-            documentAssembly: true,
-          },
-          content: imageParts,
-          defaultStyle: {
-            font: "NimbusSans",
-          },
-          pageSize: {
-            width: canvas.width,
-            height: imageHeight,
-          },
-          pageMargins: [0, 0, 0, 0],
-          footer: function (currentPage, pageCount) {
-            return {};
-          },
-        };
-        const pdfDocGenerator = pdfMake.createPdf(documentDefinition);
-        pdfDocGenerator.download(
-          `invoice-${order._id}-${moment().format("YYYY-MM-DD_HH-mm-ss")}.pdf`
-        );
-      });
+      //   const documentDefinition = {
+      //     permissions: {
+      //       printing: "highResolution", //'lowResolution'
+      //       modifying: false,
+      //       copying: false,
+      //       annotating: true,
+      //       fillingForms: true,
+      //       contentAccessibility: true,
+      //       documentAssembly: true,
+      //     },
+      //     content: imageParts,
+      //     defaultStyle: {
+      //       font: "NimbusSans",
+      //     },
+      //     pageSize: {
+      //       width: canvas.width,
+      //       height: imageHeight,
+      //     },
+      //     pageMargins: [0, 0, 0, 0],
+      //     footer: function (currentPage, pageCount) {
+      //       return {};
+      //     },
+      //   };
+      //   const pdfDocGenerator = pdfMake.createPdf(documentDefinition);
+      //   pdfDocGenerator.download(
+      //     `invoice-${order._id}-${moment().format("YYYY-MM-DD_HH-mm-ss")}.pdf`
+      //   );
+      // });
       setOrderDownloading("");
       setOpenInvoice(false);
     } catch (error) {

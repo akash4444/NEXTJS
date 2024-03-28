@@ -48,7 +48,13 @@ const apiHandler = async (request) => {
 
     // Return response with cookie set
     return NextResponse.json(
-      { message: "success", status: 200, role: user.role },
+      {
+        message: "success",
+        status: 200,
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
       {
         status: 200,
         headers: {

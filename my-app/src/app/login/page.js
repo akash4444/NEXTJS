@@ -48,6 +48,7 @@ const Login = () => {
           updateAuth({
             userId: email,
             isLoggedIn: true,
+            userName: `${data.firstName} ${data.lastName}`,
             role: data.role,
           })
         );

@@ -5,7 +5,10 @@ import moment from "moment";
 import { Modal, Button, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { LoadingSpinner, AlertModal } from "../CommonComponents";
-import jsPDF from "jspdf";
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const PDFGenerator = ({
   order = {},
@@ -43,41 +46,89 @@ const PDFGenerator = ({
   }
 
   const handleDownloadInvoice = async () => {
-    try {
-      setOrderDownloading(order._id);
-      const pdfdata = document.getElementById("pdf-creation");
-      html2canvas(pdfdata, { scrollY: -window.scrollY }).then(function (
-        canvas
-      ) {
-        var imgData = canvas.toDataURL("image/png");
-        var imgWidth = 210;
-        var pageHeight = 295;
-        var imgHeight = (canvas.height * imgWidth) / canvas.width;
-        var heightLeft = imgHeight;
-        var doc = new jsPDF("p", "mm");
-        var position = 10; // give some top padding to first page
+    // try {
+    //   setOrderDownloading(order._id);
+    //   const pdfdata = document.getElementById("pdf-creation");
+    //   html2canvas(pdfdata, { scrollY: -window.scrollY }).then(function (
+    //     canvas
+    //   ) {
+    //     var imgData = canvas.toDataURL("image/png");
+    //     var imgWidth = 210;
+    //     var pageHeight = 295;
+    //     var imgHeight = (canvas.height * imgWidth) / canvas.width;
+    //     var heightLeft = imgHeight;
+    //     var doc = new jsPDF("p", "mm");
+    //     var position = 10; // give some top padding to first page
+    //     doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+    //     heightLeft -= pageHeight;
+    //     while (heightLeft >= 0) {
+    //       position = heightLeft - imgHeight + 10; // top padding for other pages
+    //       doc.addPage();
+    //       doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+    //       heightLeft -= pageHeight;
+    //     }
+    //     doc.save(
+    //       `invoice-${order._id}-${moment().format("YYYY-MM-DD_HH-mm-ss")}.pdf`
+    //     );
+    //   });
+    //   setOrderDownloading("");
+    //   setOpenInvoice(false);
+    // } catch (error) {
+    //   console.error("Error generating PDF:", error);
+    //   setOrderDownloading("");
+    //   setOpenInvoice(false);
+    // }
+  };
 
-        doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+  const generatePDF = (invoiceDetails, productDetails) => {
+    const documentDefinition = {
+      content: [
+        { text: "Invoice Details", style: "header" },
+        { text: "Invoice Number: " + invoiceDetails.invoiceNumber },
+        { text: "Date: " + invoiceDetails.date },
+        { text: "Customer: " + invoiceDetails.customer },
+        { text: "\n" },
+        { text: "Product Details", style: "header" },
+        {
+          table: {
+            headerRows: 1,
+            widths: ["*", "*", "*"],
+            body: [
+              ["Product", "Quantity", "Price"],
+              ...productDetails.map((product) => [
+                product.name,
+                product.quantity,
+                product.price,
+              ]),
+            ],
+          },
+        },
+      ],
+      styles: {
+        header: {
+          fontSize: 18,
+          bold: true,
+          margin: [0, 0, 0, 10],
+        },
+      },
+    };
 
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight + 10; // top padding for other pages
-          doc.addPage();
-          doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
-        doc.save(
-          `invoice-${order._id}-${moment().format("YYYY-MM-DD_HH-mm-ss")}.pdf`
-        );
-      });
+    pdfMake.createPdf(documentDefinition).download("invoice.pdf");
+  };
 
-      setOrderDownloading("");
-      setOpenInvoice(false);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      setOrderDownloading("");
-      setOpenInvoice(false);
-    }
+  const handleGeneratePDF = () => {
+    const invoiceDetails = {
+      invoiceNumber: "INV-001",
+      date: "2024-04-03",
+      customer: "John Doe",
+    };
+
+    const productDetails = [
+      { name: "Product 1", quantity: 2, price: 10 },
+      { name: "Product 2", quantity: 1, price: 20 },
+      { name: "Product 3", quantity: 3, price: 15 },
+    ];
+    generatePDF(invoiceDetails, productDetails);
   };
 
   const formatDate = (dt) => {
@@ -97,7 +148,7 @@ const PDFGenerator = ({
         />
       ) : order.status === "delivered" ? (
         <button
-          onClick={() => setOpenInvoice(true)}
+          onClick={() => handleGeneratePDF(true)}
           className="bg-blue-500 text-white px-4 py-2 rounded-md"
         >
           Invoice

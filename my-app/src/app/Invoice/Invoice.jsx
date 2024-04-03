@@ -2,6 +2,9 @@
 import React from "react";
 import moment from "moment";
 import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const PDFGenerator = ({ order = {}, userName = "" }) => {
   const generatePDF = (invoiceDetails) => {
